@@ -4,14 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.onFragmentInteractionListener {
+public class AuthActivity extends AppCompatActivity implements LoginFragment.onFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private Toolbar myToolbar;
@@ -20,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onF
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_auth);
         InitUI();
         mAuth = FirebaseAuth.getInstance();
 
@@ -31,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onF
         }
         else
         {
-            Log.d("MainActivity",mAuth.getCurrentUser().toString());
+            Log.d("AuthActivity",mAuth.getCurrentUser().toString());
             //TODO start menu activity
         }
     }

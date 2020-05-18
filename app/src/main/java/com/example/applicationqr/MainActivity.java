@@ -5,19 +5,20 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        InitUI();
 
+        SignUpFragment signUpFragment = SignUpFragment.newInstance(null,null);
+        getSupportFragmentManager().beginTransaction().add(R.id.main_layout, signUpFragment).commit();
 
-        float scale = this.getResources().getDisplayMetrics().density;
-        String content = "1";
-        Bitmap b = QRGenerator.getInstance().getQRBitmap(content, scale);
-//        qrCode.setImageBitmap(b);
     }
 
     private void InitUI()

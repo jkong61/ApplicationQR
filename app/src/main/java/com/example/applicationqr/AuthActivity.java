@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -21,7 +22,12 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
         setContentView(R.layout.activity_auth);
         InitUI();
         mAuth = FirebaseAuth.getInstance();
+    }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
         if(mAuth.getCurrentUser() == null)
         {
             LoginFragment loginFragment = LoginFragment.newInstance(null,null);
@@ -30,7 +36,12 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
         else
         {
             Log.d("AuthActivity",mAuth.getCurrentUser().toString());
-            //TODO start menu activity
+
+            // Start menu activity if user is already logged in
+            Intent intent = new Intent();
+            intent.setClass(this,MainMenuActivity.class);
+            startActivity(intent);
+            this.finish();
         }
     }
 
@@ -40,6 +51,8 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
         SignUpFragment signUpFragment = SignUpFragment.newInstance(null,null);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_layout_view, signUpFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
     }
+
+
 
     @Override
     protected void onDestroy() {

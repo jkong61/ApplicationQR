@@ -1,6 +1,7 @@
 package com.example.applicationqr;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -136,6 +137,12 @@ public class LoginFragment extends Fragment
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
+
+                    // Start the "main" Activity
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(),MainMenuActivity.class);
+                    startActivity(intent);
+                    getActivity().finish();
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());

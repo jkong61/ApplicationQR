@@ -19,8 +19,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.concurrent.Executor;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +29,7 @@ public class SignUpFragment extends Fragment
 {
 
     private static final String TAG = SignUpFragment.class.getName();
-    private EditText email_edit, password_edit;
+    private EditText register_email, register_password;
     private Button submit_button;
     private FirebaseAuth mAuth;
 
@@ -95,8 +93,8 @@ public class SignUpFragment extends Fragment
 
     private void InitUI(View v)
     {
-        email_edit = v.findViewById(R.id.register_email_input);
-        password_edit = v.findViewById(R.id.register_password_input);
+        register_email = v.findViewById(R.id.register_email_input);
+        register_password = v.findViewById(R.id.register_password_input);
         submit_button = v.findViewById(R.id.register_submit_button);
 
         submit_button.setOnClickListener(new View.OnClickListener()
@@ -104,8 +102,8 @@ public class SignUpFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                String email = email_edit.getText().toString();
-                String password = password_edit.getText().toString();
+                String email = register_email.getText().toString();
+                String password = register_password.getText().toString();
 //                CreateUser(email,password);
             }
         });

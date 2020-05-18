@@ -1,12 +1,21 @@
 package com.example.applicationqr;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+import org.w3c.dom.Text;
 
 
 /**
@@ -14,7 +23,15 @@ import android.view.ViewGroup;
  * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment
+{
+    private TextView register_link;
+    private Button login_button;
+    private EditText login_email, login_password;
+    private FirebaseAuth mAuth;
+
+    private onFragmentInteractionListener fragmentInteractionListener;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -24,8 +41,14 @@ public class LoginFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public LoginFragment() {
+    public LoginFragment()
+    {
         // Required empty public constructor
+    }
+
+    public interface onFragmentInteractionListener
+    {
+        public  void startRegisterFragment();
     }
 
     /**
@@ -37,7 +60,8 @@ public class LoginFragment extends Fragment {
      * @return A new instance of fragment LoginFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
+    public static LoginFragment newInstance(String param1, String param2)
+    {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -53,12 +77,46 @@ public class LoginFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        View v = inflater.inflate(R.layout.fragment_login, container, false);
+        InitUI(v);
+        return v;
+    }
+
+    private void InitUI(View v)
+    {
+        login_email = v.findViewById(R.id.login_email_input);
+        login_password = v.findViewById(R.id.login_password_input);
+        login_button = v.findViewById(R.id.login_button);
+        register_link = v.findViewById(R.id.register_link);
+
+        register_link.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                fragmentInteractionListener.startRegisterFragment();
+            }
+        });
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try
+        {
+            fragmentInteractionListener = (onFragmentInteractionListener) context;
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
+        }
     }
 }

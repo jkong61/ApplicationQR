@@ -5,12 +5,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.net.nsd.NsdManager;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class AuthActivity extends AppCompatActivity implements LoginFragment.onFragmentInteractionListener {
+public class AuthActivity extends AppCompatActivity implements LoginFragment.onFragmentInteractionListener, SignUpFragment.onFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private Toolbar myToolbar;
@@ -56,5 +57,11 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
     {
         myToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
+    }
+
+    @Override
+    public void goBack()
+    {
+        getSupportFragmentManager().popBackStack();
     }
 }

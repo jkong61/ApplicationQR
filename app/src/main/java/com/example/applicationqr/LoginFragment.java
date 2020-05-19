@@ -114,14 +114,21 @@ public class LoginFragment extends Fragment
             {
                 String email = login_email.getText().toString();
                 String password = login_password.getText().toString();
-                Toast.makeText(getContext(), "Logging in..", Toast.LENGTH_SHORT).show();
-                loading_panel.setVisibility(View.VISIBLE);
-                SignInUser(email,password);
+                if (email.isEmpty() || password.isEmpty())
+                {
+                    Toast.makeText(getContext(), "Email and Password cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Logging in..", Toast.LENGTH_SHORT).show();
+                    loading_panel.setVisibility(View.VISIBLE);
+                    SignInUser(email,password);
+                }
             }
         });
 
+        // Initialize register link
         register_link = v.findViewById(R.id.register_link);
-
         register_link.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -154,6 +161,7 @@ public class LoginFragment extends Fragment
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    loading_panel.setVisibility(View.INVISIBLE);
                     Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
                 }
             }

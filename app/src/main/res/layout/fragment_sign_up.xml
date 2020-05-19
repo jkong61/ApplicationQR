@@ -22,8 +22,8 @@
         android:id="@+id/register_password_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Password"
         android:layout_marginTop="32dp"
+        android:text="Password"
         app:layout_constraintStart_toStartOf="@id/register_email_label"
         app:layout_constraintTop_toBottomOf="@+id/register_email_label" />
 
@@ -40,8 +40,8 @@
         android:id="@+id/register_password_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:layout_marginStart="8dp"
+        android:ems="10"
         android:inputType="textPassword"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_password_label"
         app:layout_constraintStart_toEndOf="@+id/register_password_label" />
@@ -53,7 +53,8 @@
         android:layout_marginBottom="16dp"
         android:text="Submit"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/register_go_back"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -82,4 +83,13 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/register_name_label"
         app:layout_constraintStart_toStartOf="@+id/register_email_input" />
 
+    <Button
+        android:id="@+id/register_go_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go Back"
+        app:layout_constraintBaseline_toBaselineOf="@+id/register_submit_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.528"
+        app:layout_constraintStart_toEndOf="@id/register_submit_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

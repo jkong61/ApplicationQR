@@ -132,9 +132,11 @@ public class LoginFragment extends Fragment
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
         {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+            public void onComplete(@NonNull Task<AuthResult> task)
+            {
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
+                    Toast.makeText(getContext(), "Login Success!", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "signInWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
 

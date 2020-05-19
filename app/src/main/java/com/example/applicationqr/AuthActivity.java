@@ -52,14 +52,6 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
         getSupportFragmentManager().beginTransaction().replace(R.id.main_layout_view, signUpFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
     }
 
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        mAuth.signOut();
-    }
-
     private void InitUI()
     {
         myToolbar = findViewById(R.id.main_toolbar);

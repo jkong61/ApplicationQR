@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class LoginFragment extends Fragment
     private Button login_button;
     private EditText login_email, login_password;
     private FirebaseAuth mAuth;
+    private RelativeLayout loading_panel;
 
     private onFragmentInteractionListener fragmentInteractionListener;
 
@@ -103,6 +105,7 @@ public class LoginFragment extends Fragment
         login_email = v.findViewById(R.id.login_email_input);
         login_password = v.findViewById(R.id.login_password_input);
         login_button = v.findViewById(R.id.login_button);
+        loading_panel = getActivity().findViewById(R.id.loading_panel_auth);
 
         login_button.setOnClickListener(new View.OnClickListener()
         {
@@ -111,6 +114,8 @@ public class LoginFragment extends Fragment
             {
                 String email = login_email.getText().toString();
                 String password = login_password.getText().toString();
+                Toast.makeText(getContext(), "Logging in..", Toast.LENGTH_SHORT).show();
+                loading_panel.setVisibility(View.VISIBLE);
                 SignInUser(email,password);
             }
         });
@@ -145,6 +150,7 @@ public class LoginFragment extends Fragment
                     intent.setClass(getActivity(),MainMenuActivity.class);
                     startActivity(intent);
                     getActivity().finish();
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());

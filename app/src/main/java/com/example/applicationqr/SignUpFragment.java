@@ -12,13 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -30,9 +37,11 @@ public class SignUpFragment extends Fragment
 {
 
     private static final String TAG = SignUpFragment.class.getName();
-    private EditText register_email, register_password;
+    private EditText register_email, register_password, register_name;
     private Button submit_button;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private RelativeLayout loading_panel;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,12 +83,7 @@ public class SignUpFragment extends Fragment
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mAuth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -94,7 +98,9 @@ public class SignUpFragment extends Fragment
     {
         register_email = v.findViewById(R.id.register_email_input);
         register_password = v.findViewById(R.id.register_password_input);
+        register_name = v.findViewById(R.id.register_name_input);
         submit_button = v.findViewById(R.id.register_submit_button);
+        loading_panel = getActivity().findViewById(R.id.loading_panel_auth);
 
         submit_button.setOnClickListener(new View.OnClickListener()
         {
@@ -103,12 +109,14 @@ public class SignUpFragment extends Fragment
             {
                 String email = register_email.getText().toString();
                 String password = register_password.getText().toString();
-                CreateUser(email,password);
+                String name = register_name.getText().toString();
+                loading_panel.setVisibility(View.VISIBLE);
+                CreateUser(email,password,name);
             }
         });
     }
 
-    private void CreateUser(String email,String password)
+    private void CreateUser(String email, String password, final String name)
     {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
         {
@@ -119,11 +127,32 @@ public class SignUpFragment extends Fragment
                     Log.d(TAG, "createUserWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
 
+                    Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("name", name);
+                    data.put("type", 2);
+
+                    db.collection("users").document(user.getUid())
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Log.w(TAG, "Error writing document", e);
+                                }
+                            });
+
                     // Start the "main" Activity
                     Intent intent = new Intent();
                     intent.setClass(getActivity(),MainMenuActivity.class);
                     startActivity(intent);
                     getActivity().finish();
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.getException());

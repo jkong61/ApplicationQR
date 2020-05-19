@@ -7,9 +7,18 @@
     tools:context=".MainMenuFragment">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/teacher_header"
         android:text="@string/teacher_menu"
         style="@style/HeaderTitle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/identifier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

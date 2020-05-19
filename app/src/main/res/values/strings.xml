@@ -3,5 +3,6 @@
     <string name="need_an_account_register_here"><u>Need an Account? Register Here</u></string>
     <string name="logout_label">Logout</string>
     <string name="teacher_menu">Teacher Menu</string>
+    <string name="student_menu">Student Menu</string>
 
 </resources>

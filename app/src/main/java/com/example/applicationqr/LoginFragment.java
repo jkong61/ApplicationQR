@@ -56,10 +56,6 @@ public class LoginFragment extends Fragment
         // Required empty public constructor
     }
 
-    public interface onFragmentInteractionListener
-    {
-        public  void startRegisterFragment();
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -134,7 +130,7 @@ public class LoginFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                fragmentInteractionListener.startRegisterFragment();
+                fragmentInteractionListener.onFragmentMessage(TAG,null);
             }
         });
     }
@@ -162,7 +158,7 @@ public class LoginFragment extends Fragment
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
                     loading_panel.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), String.format("Authentication failed. %s", task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

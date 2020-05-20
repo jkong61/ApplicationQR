@@ -12,7 +12,13 @@
         <item name="android:layout_marginTop">32dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="MenuButtons">
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
 </resources>

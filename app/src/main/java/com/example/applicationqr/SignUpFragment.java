@@ -38,14 +38,13 @@ public class SignUpFragment extends Fragment
 {
 
     private static final String TAG = SignUpFragment.class.getName();
-    private EditText registerEmail, registerPassword, registerName;
+    private EditText registerEmail, registerPassword, registerName, registerID;
     private Button submitButton, goBackButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private RelativeLayout loading_panel;
 
     private onFragmentInteractionListener fragmentInteractionListener;
-
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -78,10 +77,6 @@ public class SignUpFragment extends Fragment
         return fragment;
     }
 
-    public interface onFragmentInteractionListener
-    {
-        public  void goBack();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -108,6 +103,7 @@ public class SignUpFragment extends Fragment
         registerEmail = v.findViewById(R.id.register_email_input);
         registerPassword = v.findViewById(R.id.register_password_input);
         registerName = v.findViewById(R.id.register_name_input);
+        registerID = v.findViewById(R.id.register_id_input);
         submitButton = v.findViewById(R.id.register_submit_button);
         goBackButton = v.findViewById(R.id.register_go_back);
         loading_panel = getActivity().findViewById(R.id.loading_panel_auth);
@@ -116,7 +112,7 @@ public class SignUpFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                fragmentInteractionListener.goBack();
+                fragmentInteractionListener.onFragmentMessage(TAG,null);
             }
         });
 
@@ -129,21 +125,22 @@ public class SignUpFragment extends Fragment
                 String email = registerEmail.getText().toString();
                 String password = registerPassword.getText().toString();
                 String name = registerName.getText().toString();
+                String id = registerID.getText().toString();
 
-                if (email.isEmpty() || password.isEmpty() || name.isEmpty())
+                if (email.isEmpty() || password.isEmpty() || name.isEmpty() || id.isEmpty())
                 {
                     Toast.makeText(getContext(), "Email and Password cannot be empty", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
                     loading_panel.setVisibility(View.VISIBLE);
-                    CreateUser(email,password,name);
+                    CreateUser(email,password,name,id);
                 }
             }
         });
     }
 
-    private void CreateUser(String email, String password, final String name)
+    private void CreateUser(String email, String password, final String name, final String id)
     {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
         {
@@ -157,6 +154,7 @@ public class SignUpFragment extends Fragment
                     Map<String, Object> data = new HashMap<String, Object>();
                     data.put("name", name);
                     data.put("type", 2);
+                    data.put("userID",id);
 
                     db.collection("users").document(user.getUid())
                             .set(data)
@@ -180,10 +178,12 @@ public class SignUpFragment extends Fragment
                     startActivity(intent);
                     getActivity().finish();
 
-                } else {
+                } else
+                    {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    loading_panel.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getContext(), String.format("Authentication failed. %s", task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

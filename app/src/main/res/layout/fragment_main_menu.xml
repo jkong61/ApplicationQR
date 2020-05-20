@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainMenuFragment">
+
+    <TextView
+        android:id="@+id/menu_layout_header"
+        style="@style/HeaderTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/teacher_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_layout_header">
+
+        <Button
+            android:id="@+id/button_register_student"
+            style="@style/MenuButtons"
+            android:text="Register Student" />
+
+        <Button
+            android:id="@+id/button_add_class"
+            style="@style/MenuButtons"
+            android:text="Add Class" />
+
+        <Button
+            android:id="@+id/button_view_attendance"
+            style="@style/MenuButtons"
+            android:text="View Class Attendance" />
+
+        <Button
+            android:id="@+id/button_take_attendance"
+            style="@style/MenuButtons"
+            android:text="Take Attendance" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/student_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_layout_header">
+
+        <Button
+            android:id="@+id/button_update_student"
+            style="@style/MenuButtons"
+            android:text="Update Profile" />
+
+        <Button
+            android:id="@+id/button_scan_code"
+            style="@style/MenuButtons"
+            android:text="Register Attendance" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

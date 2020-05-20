@@ -3,6 +3,7 @@ package com.example.applicationqr;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -25,13 +26,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Map;
 
-public class MainMenuActivity extends AppCompatActivity
+public class MainMenuActivity extends AppCompatActivity implements onFragmentInteractionListener
 {
     private static final String TAG = "MainMenuActivity";
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Toolbar mainMenuToolbar;
-    private User currentUser;
+    private static User currentUser;
+    private MainMenuFragment mainMenuFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,7 +61,6 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-
     private void InitUI()
     {
         // Initialize the toolbar
@@ -80,16 +81,20 @@ public class MainMenuActivity extends AppCompatActivity
                     {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Map<String, Object> db_data = document.getData();
-                        currentUser = new User(db_data.get("name").toString(), (long)db_data.get("type"));
-                        findViewById(R.id.loading_panel).setVisibility(View.GONE);
+                        currentUser = new User(db_data.get("name").toString(), (long)db_data.get("type"), db_data.get("userID").toString());
+                        findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
 
-                        MainMenuFragment mainMenuFragment = MainMenuFragment.newInstance(currentUser,null);
-                        getSupportFragmentManager().beginTransaction().add(R.id.main_menu_view, mainMenuFragment).commit();
-
-                    } else {
+                        // Set proper Fragment for Activity
+                        mainMenuFragment = MainMenuFragment.newInstance(currentUser, null);
+                        getSupportFragmentManager().beginTransaction().add(R.id.main_menu_view, mainMenuFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                    }
+                    else
+                    {
                         Log.d(TAG, "No such document");
                     }
-                } else {
+                }
+                else
+                {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
             }
@@ -119,5 +124,68 @@ public class MainMenuActivity extends AppCompatActivity
         // If we got here, the user's action was not recognized.
         // Invoke the superclass to handle it.
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentMessage(String TAG, Object data)
+    {
+        // Main Menu interaction
+        if (TAG.equals(MainMenuFragment.class.getName()) && data != null)
+        {
+            int id = (int) data;
+            switch (id)
+            {
+
+                // Student Menus
+                case (R.id.button_update_student):
+                {
+                    Log.d(TAG, "student update button");
+                    UpdateProfileFragment updateProfileFragment = UpdateProfileFragment.newInstance(currentUser, null);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, updateProfileFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                    break;
+                }
+                case (R.id.button_scan_code):
+                {
+                    Log.d(TAG, "student scan button");
+                    // Fire fragment to scan code
+                    break;
+                }
+
+                // Teacher Menus
+                case (R.id.button_register_student):
+                {
+                    Log.d(TAG, "register button");
+                    break;
+                }
+                case (R.id.button_add_class):
+                {
+                    Log.d(TAG, "add class button");
+                    break;
+                }
+                case (R.id.button_view_attendance):
+                {
+                    Log.d(TAG, "view attendance button");
+                    break;
+                }
+                case (R.id.button_take_attendance):
+                {
+                    Log.d(TAG, "take attendance button");
+                    break;
+                }
+            }
+        }
+
+        // Finish Update Profile Fragment
+        else if (TAG.equals(UpdateProfileFragment.class.getName()))
+        {
+            if (data != null)
+            {
+                currentUser = (User) data;
+                if (mainMenuFragment != null)
+                    mainMenuFragment.UpdateSelf(currentUser);
+                getSupportFragmentManager().popBackStack();
+                findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+            }
+        }
     }
 }

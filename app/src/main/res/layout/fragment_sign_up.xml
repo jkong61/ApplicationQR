@@ -32,6 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:imeOptions="actionNext"
         android:inputType="textEmailAddress"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_email_label"
         app:layout_constraintStart_toStartOf="@+id/register_password_input" />
@@ -42,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:ems="10"
+        android:imeOptions="actionNext"
         android:inputType="textPassword"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_password_label"
         app:layout_constraintStart_toEndOf="@+id/register_password_label" />
@@ -79,9 +81,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:imeOptions="actionNext"
         android:inputType="textPersonName"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_name_label"
         app:layout_constraintStart_toStartOf="@+id/register_email_input" />
+
+    <TextView
+        android:id="@+id/register_id_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="StudentID"
+        app:layout_constraintStart_toStartOf="@+id/register_email_label"
+        app:layout_constraintTop_toBottomOf="@+id/register_name_label" />
+
+    <EditText
+        android:id="@+id/register_id_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        app:layout_constraintBaseline_toBaselineOf="@+id/register_id_label"
+        app:layout_constraintStart_toStartOf="@+id/register_email_input" />
+
 
     <Button
         android:id="@+id/register_go_back"
@@ -90,6 +113,5 @@
         android:text="Go Back"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_submit_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.528"
         app:layout_constraintStart_toEndOf="@id/register_submit_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

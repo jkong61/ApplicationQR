@@ -1,14 +1,21 @@
 package com.example.applicationqr;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
 
 
 /**
@@ -18,14 +25,24 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class MainMenuFragment extends Fragment
 {
-    FirebaseAuth mAuth;
+    private static final String TAG = MainMenuFragment.class.getName();
+    private FirebaseAuth mAuth;
+    private TextView mainMenuHeader;
+    private LinearLayout teacherMenu, studentMenu;
+    private int[] teacherButtonIDs= {R.id.button_register_student,R.id.button_add_class, R.id.button_view_attendance, R.id.button_take_attendance};
+    private int[] studentButtonIDs= {R.id.button_update_student,R.id.button_scan_code};
+    private ArrayList<Button> teacherButtonViews = new ArrayList<>();
+    private ArrayList<Button> studentButtonViews = new ArrayList<>();
+
+    private onFragmentInteractionListener menuFragmentInteractionListener;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private User mParam1;
+    private User userObj;
     private String mParam2;
 
     public MainMenuFragment() {
@@ -54,7 +71,7 @@ public class MainMenuFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getParcelable(ARG_PARAM1);
+            userObj = getArguments().getParcelable(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mAuth = FirebaseAuth.getInstance();
@@ -62,13 +79,91 @@ public class MainMenuFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-        View v;
-        if(mParam1.getType() == 1) // Teacher
-            v = inflater.inflate(R.layout.fragment_main_menu_teacher, container, false);
-        else
-            v = inflater.inflate(R.layout.fragment_main_menu_student, container, false);
+        View v = inflater.inflate(R.layout.fragment_main_menu, container, false);
+        InitUI(v, (int) userObj.getType());
+
         return v;
+    }
+
+
+    private void InitUI(View v, int type)
+    {
+        mainMenuHeader = v.findViewById(R.id.menu_layout_header);
+        mainMenuHeader.setText(String.format("Welcome back, %s.", userObj.getName()));
+
+        teacherMenu = v.findViewById(R.id.teacher_menu);
+        studentMenu = v.findViewById(R.id.student_menu);
+
+        if (type == 1)
+        {
+            teacherMenu.setVisibility(View.VISIBLE);
+            InitTeacherUI(v);
+        }
+        else
+        {
+            studentMenu.setVisibility(View.VISIBLE);
+            InitStudentUI(v);
+        }
+    }
+
+    private void InitTeacherUI(View v)
+    {
+        for (int id: teacherButtonIDs)
+        {
+            teacherButtonViews.add((Button)v.findViewById(id));
+        }
+
+        for (Button b: teacherButtonViews)
+        {
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    menuFragmentInteractionListener.onFragmentMessage(TAG, v.getId());
+                }
+            });
+        }
+    }
+
+    private void InitStudentUI(View v)
+    {
+        for (int id: studentButtonIDs)
+        {
+            studentButtonViews.add((Button)v.findViewById(id));
+        }
+
+        // Set on click listeners
+        for (Button b: studentButtonViews)
+        {
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    menuFragmentInteractionListener.onFragmentMessage(TAG, v.getId());
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        try
+        {
+            menuFragmentInteractionListener = (onFragmentInteractionListener) context;
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
+        }
+    }
+
+    public void UpdateSelf(User user)
+    {
+        userObj = user;
     }
 }

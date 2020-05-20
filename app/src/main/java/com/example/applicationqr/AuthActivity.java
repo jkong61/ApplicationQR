@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class AuthActivity extends AppCompatActivity implements LoginFragment.onFragmentInteractionListener, SignUpFragment.onFragmentInteractionListener {
+public class AuthActivity extends AppCompatActivity implements onFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private Toolbar myToolbar;
@@ -46,13 +46,6 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
         }
     }
 
-    @Override
-    public void startRegisterFragment()
-    {
-        SignUpFragment signUpFragment = SignUpFragment.newInstance(null,null);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout_view, signUpFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-    }
-
     private void InitUI()
     {
         myToolbar = findViewById(R.id.main_toolbar);
@@ -60,8 +53,16 @@ public class AuthActivity extends AppCompatActivity implements LoginFragment.onF
     }
 
     @Override
-    public void goBack()
+    public void onFragmentMessage(String TAG, Object data)
     {
-        getSupportFragmentManager().popBackStack();
+        if (TAG.equals(LoginFragment.class.getName()))
+        {
+            SignUpFragment signUpFragment = SignUpFragment.newInstance(null,null);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_layout_view, signUpFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+        }
+        else if (TAG.equals(SignUpFragment.class.getName()))
+        {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }

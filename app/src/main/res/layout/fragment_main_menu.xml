@@ -58,6 +58,11 @@
         app:layout_constraintTop_toBottomOf="@id/menu_layout_header">
 
         <Button
+            android:id="@+id/button_display_student_code"
+            style="@style/MenuButtons"
+            android:text="Display QR" />
+
+        <Button
             android:id="@+id/button_update_student"
             style="@style/MenuButtons"
             android:text="Update Profile" />

@@ -28,7 +28,7 @@ public class QRGenerator
         {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             float displayScale = context.getResources().getDisplayMetrics().density;
-            int p = (int) (400 * displayScale + 0.5f);
+            int p = (int) (300 * displayScale + 0.5f);
             return barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, p, p);
         }
         catch(Exception ignored)

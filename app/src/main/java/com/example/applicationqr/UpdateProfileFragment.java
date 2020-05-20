@@ -15,13 +15,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -131,7 +128,7 @@ public class UpdateProfileFragment extends Fragment
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
                         Toast.makeText(getContext(),"Profile Successfully Updated",Toast.LENGTH_SHORT).show();
 
-                        User u = new User(name,2,id);
+                        User u = new User(mAuth.getUid(), name,2,id);
 
                         // Finish Fragment
                         fragmentInteractionListener.onFragmentMessage(TAG,u);

@@ -32,7 +32,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Toolbar mainMenuToolbar;
-    private static User currentUser;
+    private User currentUser;
     private MainMenuFragment mainMenuFragment;
 
     @Override
@@ -71,7 +71,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
 
     private void setUser()
     {
-        DocumentReference docRef = db.collection("users").document(mAuth.getCurrentUser().getUid());
+        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -81,7 +81,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                     {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Map<String, Object> db_data = document.getData();
-                        currentUser = new User(db_data.get("name").toString(), (long)db_data.get("type"), db_data.get("userID").toString());
+                        currentUser = new User(mAuth.getUid(), db_data.get("name").toString(), (long)db_data.get("type"), db_data.get("userID").toString());
                         findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
 
                         // Set proper Fragment for Activity
@@ -135,8 +135,14 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
             int id = (int) data;
             switch (id)
             {
-
                 // Student Menus
+                case (R.id.button_display_student_code):
+                {
+                    Log.d(TAG, "student display code button");
+                    DisplayCodeFragment displayCodeFragment = DisplayCodeFragment.newInstance(currentUser, null);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, displayCodeFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                    break;
+                }
                 case (R.id.button_update_student):
                 {
                     Log.d(TAG, "student update button");

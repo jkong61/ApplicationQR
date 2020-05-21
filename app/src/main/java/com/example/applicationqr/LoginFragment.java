@@ -167,6 +167,7 @@ public class LoginFragment extends Fragment
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        setRetainInstance(true);
         try
         {
             fragmentInteractionListener = (onFragmentInteractionListener) context;
@@ -176,4 +177,5 @@ public class LoginFragment extends Fragment
             throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
         }
     }
+
 }

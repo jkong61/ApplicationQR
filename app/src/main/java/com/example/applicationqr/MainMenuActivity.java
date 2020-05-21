@@ -42,7 +42,15 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
         setContentView(R.layout.activity_main_menu);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        setUser();
+
+        if (savedInstanceState != null)
+        {
+            findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+            getSupportFragmentManager().findFragmentByTag("menu_tag");
+            currentUser = savedInstanceState.getParcelable("USER");
+        }
+        else
+            setUser();
         InitUI();
     }
 
@@ -86,7 +94,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
 
                         // Set proper Fragment for Activity
                         mainMenuFragment = MainMenuFragment.newInstance(currentUser, null);
-                        getSupportFragmentManager().beginTransaction().add(R.id.main_menu_view, mainMenuFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                        getSupportFragmentManager().beginTransaction().add(R.id.main_menu_view, mainMenuFragment,"menu_tag").setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     }
                     else
                     {
@@ -102,14 +110,16 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.appbar_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         if (item.getItemId() == R.id.action_settings)
         {
             Toast.makeText(this, "Logging Out", Toast.LENGTH_SHORT).show();
@@ -193,5 +203,13 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        outState.putParcelable("USER", currentUser);
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
     }
 }

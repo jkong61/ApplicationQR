@@ -15,6 +15,7 @@ public class AuthActivity extends AppCompatActivity implements onFragmentInterac
 
     private FirebaseAuth mAuth;
     private Toolbar myToolbar;
+    LoginFragment loginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,16 +24,16 @@ public class AuthActivity extends AppCompatActivity implements onFragmentInterac
         setContentView(R.layout.activity_auth);
         InitUI();
         mAuth = FirebaseAuth.getInstance();
-    }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
         if(mAuth.getCurrentUser() == null)
         {
-            LoginFragment loginFragment = LoginFragment.newInstance(null,null);
-            getSupportFragmentManager().beginTransaction().add(R.id.main_layout_view, loginFragment).commit();
+            if (savedInstanceState != null)
+                getSupportFragmentManager().findFragmentByTag("login_tag");
+            else
+            {
+                loginFragment = LoginFragment.newInstance(null,null);
+                getSupportFragmentManager().beginTransaction().add(R.id.main_layout_view, loginFragment,"login_tag").commit();
+            }
         }
         else
         {

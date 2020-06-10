@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.fragments;
 
 import android.os.Bundle;
 
@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.example.applicationqr.model.QRGenerator;
+import com.example.applicationqr.R;
+import com.example.applicationqr.model.User;
 
 
 /**

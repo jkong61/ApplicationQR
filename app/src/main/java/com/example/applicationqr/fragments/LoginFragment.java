@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +17,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.applicationqr.MainMenuActivity;
+import com.example.applicationqr.R;
+import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -150,7 +151,7 @@ public class LoginFragment extends Fragment
 
                     // Start the "main" Activity
                     Intent intent = new Intent();
-                    intent.setClass(getActivity(),MainMenuActivity.class);
+                    intent.setClass(getActivity(), MainMenuActivity.class);
                     startActivity(intent);
                     getActivity().finish();
 

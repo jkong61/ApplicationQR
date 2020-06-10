@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.applicationqr.MainMenuActivity;
+import com.example.applicationqr.R;
+import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -174,7 +177,7 @@ public class SignUpFragment extends Fragment
 
                     // Start the "main menu" Activity
                     Intent intent = new Intent();
-                    intent.setClass(getActivity(),MainMenuActivity.class);
+                    intent.setClass(getActivity(), MainMenuActivity.class);
                     startActivity(intent);
                     getActivity().finish();
 

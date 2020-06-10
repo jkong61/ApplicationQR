@@ -5,10 +5,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
-import android.net.nsd.NsdManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.applicationqr.fragments.LoginFragment;
+import com.example.applicationqr.fragments.SignUpFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AuthActivity extends AppCompatActivity implements onFragmentInteractionListener {

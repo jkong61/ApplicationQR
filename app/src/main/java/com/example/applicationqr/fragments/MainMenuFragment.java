@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.applicationqr.R;
+import com.example.applicationqr.model.User;
+import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;

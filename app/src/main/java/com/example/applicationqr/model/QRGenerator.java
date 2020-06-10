@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,20 +9,19 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 public class QRGenerator
 {
-    private static QRGenerator instance = null;
+    private static QRGenerator instance;
 
     private QRGenerator()
     {
     }
 
-    static QRGenerator getInstance() {
-        if (instance == null) {
+    public static QRGenerator getInstance() {
+        if (instance == null)
             instance = new QRGenerator();
-        }
         return instance;
     }
 
-    Bitmap getQRBitmap(String content, Context context)
+    public Bitmap getQRBitmap(String content, Context context)
     {
         try
         {

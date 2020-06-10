@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

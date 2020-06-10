@@ -16,6 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.applicationqr.fragments.DisplayCodeFragment;
+import com.example.applicationqr.fragments.MainMenuFragment;
+import com.example.applicationqr.fragments.UpdateProfileFragment;
+import com.example.applicationqr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -163,7 +167,8 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 case (R.id.button_scan_code):
                 {
                     Log.d(TAG, "student scan button");
-                    // Fire fragment to scan code
+                    Intent barcodeScanner = new Intent(this, BarcodeScannerActivity.class);
+                    startActivityForResult(barcodeScanner, 1);
                     break;
                 }
 

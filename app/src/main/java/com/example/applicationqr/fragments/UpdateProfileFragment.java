@@ -1,4 +1,4 @@
-package com.example.applicationqr;
+package com.example.applicationqr.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.applicationqr.R;
+import com.example.applicationqr.model.User;
+import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

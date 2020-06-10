@@ -217,16 +217,18 @@ public class BarcodeScannerActivity extends AppCompatActivity
         return new BarcodeScanningProcessor.BarcodeResultListener() {
             @Override
             public void onSuccess(@Nullable Bitmap originalCameraImage, @NonNull List<FirebaseVisionBarcode> barcodes, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
-                Log.d(TAG, "onSuccess: " + barcodes.size());
+                Log.d(TAG, "onSuccess_size: " + barcodes.size());
 
                 for (FirebaseVisionBarcode barCode : barcodes)
                 {
 
-                    Log.d(TAG, "onSuccess: " + barCode.getRawValue());
-                    Log.d(TAG, "onSuccess: " + barCode.getFormat());
-                    Log.d(TAG, "onSuccess: " + barCode.getValueType());
+                    Log.d(TAG, "onSuccess_raw: " + barCode.getRawValue());
+                    Log.d(TAG, "onSuccess_format: " + barCode.getFormat());
+                    Log.d(TAG, "onSuccess_val_type: " + barCode.getValueType());
 
-                    FirebaseVisionBarcode.ContactInfo contactInfo = barCode.getContactInfo();
+                    String string = barCode.getDisplayValue();
+                    Log.d(TAG, "onSuccess_value: " + string);
+                    finish();
 
 //                    ContactDetail contactDetail = new ContactDetail();
 //                    if (contactInfo != null) {

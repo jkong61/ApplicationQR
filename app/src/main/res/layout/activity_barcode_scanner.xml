@@ -6,22 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".BarcodeScannerActivity">
 
-    <com.example.applicationqr.QRScanner.common.CameraSourcePreview
-        android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.example.applicationqr.QRScanner.common.GraphicOverlay
-            android:id="@+id/barcodeOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.example.applicationqr.QRScanner.common.CameraSourcePreview>
-
-    <com.example.applicationqr.QRScanner.OverlayView
-        android:id="@+id/overlayView"
+    <TextureView
+        android:id="@+id/texture_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

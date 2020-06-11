@@ -103,6 +103,7 @@ public class LoginFragment extends Fragment
         login_password = v.findViewById(R.id.login_password_input);
         login_button = v.findViewById(R.id.login_button);
         loading_panel = getActivity().findViewById(R.id.loading_panel);
+        loading_panel.setVisibility(View.INVISIBLE);
 
         login_button.setOnClickListener(new View.OnClickListener()
         {

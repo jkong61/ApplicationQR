@@ -109,7 +109,7 @@ public class SignUpFragment extends Fragment
         registerID = v.findViewById(R.id.register_id_input);
         submitButton = v.findViewById(R.id.register_submit_button);
         goBackButton = v.findViewById(R.id.register_go_back);
-        loading_panel = getActivity().findViewById(R.id.loading_panel_auth);
+        loading_panel = getActivity().findViewById(R.id.loading_panel);
 
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override

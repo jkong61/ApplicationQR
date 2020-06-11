@@ -10,6 +10,7 @@ import androidx.camera.core.PreviewConfig;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 
 import android.widget.Toast;
 
+import com.example.applicationqr.model.User;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
@@ -33,9 +35,9 @@ import java.util.List;
 
 public class BarcodeScannerActivity extends AppCompatActivity implements ImageAnalysis.Analyzer
 {
-
+    private final String TAG = getClass().getName();
+    private User currentUser;
     private int REQUEST_CODE_PERMISSIONS = 101;
-    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
 
     private TextureView textureView;
     @Override
@@ -45,11 +47,11 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         setContentView(R.layout.activity_barcode_scanner);
 
         InitUI();
-
+        InitBundles();
         if(isCameraPermissionGranted())
             startCamera(); //start camera if permission has been granted by user
         else
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.CAMERA"}, REQUEST_CODE_PERMISSIONS);
     }
 
     private void InitUI()
@@ -62,18 +64,14 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         PreviewConfig previewConfig = new PreviewConfig.Builder().setLensFacing(CameraX.LensFacing.BACK).build();
         Preview preview = new Preview(previewConfig);
 
-        preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener()
+        preview.setOnPreviewOutputUpdateListener(output ->
         {
-            @Override
-            public void onUpdated(Preview.PreviewOutput output)
-            {
-                ViewGroup parent = (ViewGroup) textureView.getParent();
-                parent.removeView(textureView);
-                parent.addView(textureView, 0);
+            ViewGroup parent = (ViewGroup) textureView.getParent();
+            parent.removeView(textureView);
+            parent.addView(textureView, 0);
 
-                textureView.setSurfaceTexture(output.getSurfaceTexture());
-                updateTransform();
-            }
+            textureView.setSurfaceTexture(output.getSurfaceTexture());
+            updateTransform();
         });
 
         ImageAnalysisConfig imageAnalysisConfig = new ImageAnalysisConfig.Builder().build();
@@ -160,12 +158,12 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         {
             for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes)
             {
-                Log.d(getClass().getName(), "onQRCodesDetected: " + barcode.getDisplayValue());
+                Log.d(TAG, "onQRCodesDetected: " + barcode.getDisplayValue());
 
-                //TODO return the data to main menu to start another fragment
+                // Return the data to main menu to start another fragment
+                returnReply(barcode);
                 break;
             }
-            finish();
         }
     }
 
@@ -183,5 +181,30 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
                 return FirebaseVisionImageMetadata.ROTATION_270;
         }
         throw new IllegalArgumentException("Not supported");
+    }
+
+    private void InitBundles()
+    {
+        Intent intent = getIntent();
+        currentUser = intent.getExtras().getParcelable("USER");
+    }
+
+    private void returnReply(FirebaseVisionBarcode barcode)
+    {
+        if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_URL && currentUser.getType() == 2)
+        {
+            Intent resultIntent = new Intent(this, MainMenuActivity.class);
+            resultIntent.putExtra("URL_VALUE", barcode.getDisplayValue());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
+
+        if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_TEXT && currentUser.getType() == 1)
+        {
+            Intent resultIntent = new Intent(this, MainMenuActivity.class);
+            resultIntent.putExtra("STUDENT_ID", barcode.getDisplayValue());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.applicationqr;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.applicationqr.fragments.DisplayCodeFragment;
 import com.example.applicationqr.fragments.MainMenuFragment;
+import com.example.applicationqr.fragments.ResultsFragment;
 import com.example.applicationqr.fragments.UpdateProfileFragment;
 import com.example.applicationqr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +35,8 @@ import java.util.Map;
 public class MainMenuActivity extends AppCompatActivity implements onFragmentInteractionListener
 {
     private static final String TAG = "MainMenuActivity";
+    private final int BARCODE_URL_REQUEST = 1;
+    private final int BARCODE_REGISTER_REQUEST = 2;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Toolbar mainMenuToolbar;
@@ -167,8 +171,11 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 case (R.id.button_scan_code):
                 {
                     Log.d(TAG, "student scan button");
-                    Intent barcodeScanner = new Intent(this, BarcodeScannerActivity.class);
-                    startActivityForResult(barcodeScanner, 1);
+                    Intent barcodeScannerIntent = new Intent(this, BarcodeScannerActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("USER",currentUser);
+                    barcodeScannerIntent.putExtras(bundle);
+                    startActivityForResult(barcodeScannerIntent, BARCODE_URL_REQUEST);
                     break;
                 }
 
@@ -176,6 +183,11 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 case (R.id.button_register_student):
                 {
                     Log.d(TAG, "register button");
+                    Intent barcodeScannerIntent = new Intent(this, BarcodeScannerActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("USER", currentUser);
+                    barcodeScannerIntent.putExtras(bundle);
+                    startActivityForResult(barcodeScannerIntent, BARCODE_REGISTER_REQUEST);
                     break;
                 }
                 case (R.id.button_add_class):
@@ -216,5 +228,24 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
         outState.putParcelable("USER", currentUser);
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == BARCODE_URL_REQUEST && resultCode == RESULT_OK)
+        {
+            String url = data.getStringExtra("URL_VALUE");
+            Log.d(TAG, "onActivityResult: URL "+ url);
+            ResultsFragment resultsFragment = ResultsFragment.newInstance(currentUser, url);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, resultsFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+        }
+
+        if(requestCode == BARCODE_REGISTER_REQUEST && resultCode == RESULT_OK)
+        {
+            String url = data.getStringExtra("STUDENT_ID");
+            Log.d(TAG, "onActivityResult: ID "+ url);
+        }
     }
 }

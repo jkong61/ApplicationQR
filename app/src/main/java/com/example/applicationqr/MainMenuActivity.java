@@ -220,6 +220,12 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
             }
         }
+
+        else if(TAG.equals(ResultsFragment.class.getName()))
+        {
+            getSupportFragmentManager().popBackStack();
+            findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

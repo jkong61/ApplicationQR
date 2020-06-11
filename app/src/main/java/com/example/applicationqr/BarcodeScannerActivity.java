@@ -158,7 +158,9 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         {
             for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes)
             {
-                Log.d(TAG, "onQRCodesDetected: " + barcode.getDisplayValue());
+                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
+                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
+                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
 
                 // Return the data to main menu to start another fragment
                 returnReply(barcode);

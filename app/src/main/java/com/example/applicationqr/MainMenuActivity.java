@@ -17,7 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.applicationqr.fragments.DisplayCodeFragment;
+import com.example.applicationqr.fragments.ClassListFragment;
+import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.fragments.MainMenuFragment;
 import com.example.applicationqr.fragments.ResultsFragment;
 import com.example.applicationqr.fragments.UpdateProfileFragment;
@@ -35,12 +36,12 @@ import java.util.Map;
 public class MainMenuActivity extends AppCompatActivity implements onFragmentInteractionListener
 {
     private static final String TAG = "MainMenuActivity";
-    private final int BARCODE_URL_REQUEST = 1;
-    private final int BARCODE_REGISTER_REQUEST = 2;
+    public final static int BARCODE_URL_REQUEST = 1;
+    public static User currentUser;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Toolbar mainMenuToolbar;
-    private User currentUser;
+    public final int BARCODE_REGISTER_REQUEST = 2;
     private MainMenuFragment mainMenuFragment;
 
     @Override
@@ -157,7 +158,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 case (R.id.button_display_student_code):
                 {
                     Log.d(TAG, "student display code button");
-                    DisplayCodeFragment displayCodeFragment = DisplayCodeFragment.newInstance(currentUser, null);
+                    DisplayQRCodeFragment displayCodeFragment = DisplayQRCodeFragment.newInstance(currentUser, null);
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, displayCodeFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;
                 }
@@ -182,27 +183,29 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 // Teacher Menus
                 case (R.id.button_register_student):
                 {
-                    Log.d(TAG, "register button");
-                    Intent barcodeScannerIntent = new Intent(this, BarcodeScannerActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("USER", currentUser);
-                    barcodeScannerIntent.putExtras(bundle);
-                    startActivityForResult(barcodeScannerIntent, BARCODE_REGISTER_REQUEST);
+//                    Log.d(TAG, "register button");
+//                    Intent barcodeScannerIntent = new Intent(this, BarcodeScannerActivity.class);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putParcelable("USER", currentUser);
+//                    barcodeScannerIntent.putExtras(bundle);
+//                    startActivityForResult(barcodeScannerIntent, BARCODE_REGISTER_REQUEST);
+
+                    ClassListFragment classListFragment = ClassListFragment.newInstance(null, id);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, classListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;
                 }
-                case (R.id.button_add_class):
+                case (R.id.button_classes):
                 {
-                    Log.d(TAG, "add class button");
-                    break;
-                }
-                case (R.id.button_view_attendance):
-                {
-                    Log.d(TAG, "view attendance button");
+                    Log.d(TAG, "classes button");
+                    ClassListFragment classListFragment = ClassListFragment.newInstance(null, id);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, classListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;
                 }
                 case (R.id.button_take_attendance):
                 {
                     Log.d(TAG, "take attendance button");
+                    ClassListFragment classListFragment = ClassListFragment.newInstance(null, id);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, classListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;
                 }
             }
@@ -222,6 +225,12 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
         }
 
         else if(TAG.equals(ResultsFragment.class.getName()))
+        {
+            getSupportFragmentManager().popBackStack();
+            findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+        }
+
+        else if(TAG.equals(ClassListFragment.class.getName()))
         {
             getSupportFragmentManager().popBackStack();
             findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);

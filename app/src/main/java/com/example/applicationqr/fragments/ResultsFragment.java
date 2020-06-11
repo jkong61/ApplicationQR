@@ -161,7 +161,7 @@ public class ResultsFragment extends Fragment
                     public void onErrorResponse(VolleyError error)
                     {
                         loadingpanel.setVisibility(View.INVISIBLE);
-                        resultLabel.setText("URL is not valid");
+                        resultLabel.setText("Code is not valid");
                         VolleyLog.e("Error: ", error.getMessage());
                         Log.d("Error.Response", String.valueOf(error));
                         confirmButton.setEnabled(true);

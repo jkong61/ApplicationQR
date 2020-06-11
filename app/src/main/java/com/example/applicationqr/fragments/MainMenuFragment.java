@@ -32,7 +32,7 @@ public class MainMenuFragment extends Fragment
     private FirebaseAuth mAuth;
     private TextView mainMenuHeader;
     private LinearLayout teacherMenu, studentMenu;
-    private int[] teacherButtonIDs= {R.id.button_register_student,R.id.button_add_class, R.id.button_view_attendance, R.id.button_take_attendance};
+    private int[] teacherButtonIDs= {R.id.button_register_student,R.id.button_classes, R.id.button_take_attendance};
     private int[] studentButtonIDs= {R.id.button_display_student_code, R.id.button_update_student,R.id.button_scan_code};
     private ArrayList<Button> teacherButtonViews = new ArrayList<>();
     private ArrayList<Button> studentButtonViews = new ArrayList<>();

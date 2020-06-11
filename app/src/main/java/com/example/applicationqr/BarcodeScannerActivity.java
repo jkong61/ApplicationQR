@@ -38,6 +38,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
     private final String TAG = getClass().getName();
     private User currentUser;
     private int REQUEST_CODE_PERMISSIONS = 101;
+    private FirebaseVisionBarcodeDetector detector;
 
     private TextureView textureView;
     @Override
@@ -78,6 +79,11 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         ImageAnalysis imageAnalysis = new ImageAnalysis(imageAnalysisConfig);
 
         imageAnalysis.setAnalyzer(this);
+
+        FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
+                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build();
+
+        detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
 
         CameraX.bindToLifecycle(this, preview, imageAnalysis);
     }
@@ -134,18 +140,13 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
     @Override
     public void analyze(ImageProxy image, int rotationDegrees)
     {
-        FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build();
-
-        FirebaseVisionBarcodeDetector detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
-
         int rotation = rotationDegreesToFirebaseRotation(rotationDegrees);
         FirebaseVisionImage visionImage = FirebaseVisionImage.fromMediaImage(image.getImage(), rotation);
 
         detector.detectInImage(visionImage)
                 .addOnSuccessListener(firebaseVisionBarcodes ->
                 {
-                    Log.d("QrCodeAnalyzer", "something detected");
+//                    Log.d("QrCodeAnalyzer", "something detected");
                     onQRCodesDetected(firebaseVisionBarcodes);
                 })
                 .addOnFailureListener(e -> Log.e("QrCodeAnalyzer", "something went wrong", e));
@@ -158,9 +159,9 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         {
             for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes)
             {
-                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
-                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
-                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
+//                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
+//                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
+//                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
 
                 // Return the data to main menu to start another fragment
                 returnReply(barcode);

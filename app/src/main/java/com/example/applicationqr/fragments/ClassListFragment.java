@@ -1,7 +1,9 @@
 package com.example.applicationqr.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.applicationqr.R;
+import com.example.applicationqr.adapters.ClassAdapter;
+import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
@@ -26,8 +30,10 @@ public class ClassListFragment extends Fragment
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
+    private String TAG = ClassListFragment.class.getName();
     private String mParam1;
-    private String mParam2;
+    private int request;
+    private onFragmentInteractionListener fragmentInteractionListener;
 
     private RecyclerView recyclerView;
     private FloatingActionButton addButton;
@@ -46,12 +52,12 @@ public class ClassListFragment extends Fragment
      * @return A new instance of fragment ClassListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ClassListFragment newInstance(String param1, String param2)
+    public static ClassListFragment newInstance(String param1, int param2)
     {
         ClassListFragment fragment = new ClassListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,7 +69,7 @@ public class ClassListFragment extends Fragment
         if (getArguments() != null)
         {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            request = getArguments().getInt(ARG_PARAM2);
         }
     }
 
@@ -75,19 +81,37 @@ public class ClassListFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_class_list, container, false);
         recyclerView = v.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        recyclerView.setAdapter();
+        recyclerView.setAdapter(new ClassAdapter(request));
 
         addButton = v.findViewById(R.id.addButton);
 
-        addButton.setOnClickListener(new View.OnClickListener()
+        if(request == R.id.button_register_student || request == R.id.button_take_attendance)
+            addButton.setVisibility(View.INVISIBLE);
+        else
         {
-            @Override
-            public void onClick(View v)
+            addButton.setOnClickListener(new View.OnClickListener()
             {
-                // Add class
-            }
-        });
-
+                @Override
+                public void onClick(View v)
+                {
+                    fragmentInteractionListener.onFragmentMessage(TAG, null);
+                }
+            });
+        }
         return v;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        try
+        {
+            fragmentInteractionListener = (onFragmentInteractionListener) context;
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
+        }
     }
 }

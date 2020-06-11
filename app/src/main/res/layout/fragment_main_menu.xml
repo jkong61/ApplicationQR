@@ -30,14 +30,9 @@
             android:text="Register Student" />
 
         <Button
-            android:id="@+id/button_add_class"
+            android:id="@+id/button_classes"
             style="@style/MenuButtons"
-            android:text="Add Class" />
-
-        <Button
-            android:id="@+id/button_view_attendance"
-            style="@style/MenuButtons"
-            android:text="View Class Attendance" />
+            android:text="Classes" />
 
         <Button
             android:id="@+id/button_take_attendance"

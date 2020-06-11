@@ -13,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.applicationqr.R;
 import com.example.applicationqr.adapters.ClassAdapter;
 import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,8 +38,10 @@ public class ClassListFragment extends Fragment
     private String TAG = ClassListFragment.class.getName();
     private String mParam1;
     private int request;
+    private ClassAdapter classAdapter;
     private onFragmentInteractionListener fragmentInteractionListener;
 
+    private TextView nothingHere;
     private RecyclerView recyclerView;
     private FloatingActionButton addButton;
 
@@ -81,15 +86,25 @@ public class ClassListFragment extends Fragment
     {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_class_list, container, false);
+        InitUI(v);
+        return v;
+    }
+
+    private void InitUI(View v)
+    {
+        nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(dividerItemDecoration);
-        recyclerView.setAdapter(new ClassAdapter(request));
+
+        classAdapter = new ClassAdapter(request);
+        recyclerView.setAdapter(classAdapter);
 
         addButton = v.findViewById(R.id.addButton);
 
+        // Checks from which button did the click originate from to hide the floating action button
         if(request == R.id.button_register_student || request == R.id.button_take_attendance)
             addButton.setVisibility(View.INVISIBLE);
         else
@@ -103,7 +118,6 @@ public class ClassListFragment extends Fragment
                 }
             });
         }
-        return v;
     }
 
     @Override
@@ -118,5 +132,15 @@ public class ClassListFragment extends Fragment
         {
             throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        // To check if there is anything in adapter, if not empty then will remove the middle TextView
+        if(classAdapter.getItemCount() > 0)
+            nothingHere.setVisibility(View.INVISIBLE);
     }
 }

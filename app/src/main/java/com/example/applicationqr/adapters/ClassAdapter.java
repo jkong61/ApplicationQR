@@ -33,7 +33,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
     {
         this.requestID = requestID;
         classrooms = new ArrayList<>();
-        classrooms.add(new Classroom("Bflb2Czil55WxDDGhlc8","Some Interesting Class","COS12021",5));
+//        classrooms.add(new Classroom("Bflb2Czil55WxDDGhlc8","Some Interesting Class","COS12021",5));
     }
 
     @NonNull

@@ -3,6 +3,7 @@ package com.example.applicationqr.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +20,32 @@ import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.model.Classroom;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder>
 {
 
+    private static final String TAG = ClassAdapter.class.getName();
     private Context thisContext;
     private ArrayList<Classroom> classrooms;
     private int requestID;
+    private FirebaseFirestore db;
 
-    public ClassAdapter(int requestID)
+    public ClassAdapter(int requestID, ArrayList<Classroom> classes)
     {
         this.requestID = requestID;
         classrooms = new ArrayList<>();
-//        classrooms.add(new Classroom("Bflb2Czil55WxDDGhlc8","Some Interesting Class","COS12021",5));
+        db = FirebaseFirestore.getInstance();
+        classrooms = classes;
     }
 
     @NonNull
@@ -97,5 +109,31 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                     break;
             }
         }
+    }
+
+    private void getClassrooms()
+    {
+        ArrayList<Classroom> tempcollection = new ArrayList<>();
+        db.collection("classes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                if (task.isSuccessful())
+                {
+                    for (QueryDocumentSnapshot document : task.getResult())
+                    {
+                        Map<String,Object> fields = document.getData();
+                        ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
+                        tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                    }
+                    classrooms.addAll(tempcollection);
+                    notifyDataSetChanged();
+                }
+                else
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
     }
 }

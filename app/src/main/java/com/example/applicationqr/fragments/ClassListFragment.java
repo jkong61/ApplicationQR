@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,20 @@ import android.widget.TextView;
 
 import com.example.applicationqr.R;
 import com.example.applicationqr.adapters.ClassAdapter;
+import com.example.applicationqr.model.Classroom;
 import com.example.applicationqr.onFragmentInteractionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +49,9 @@ public class ClassListFragment extends Fragment
     private String TAG = ClassListFragment.class.getName();
     private String mParam1;
     private int request;
+    private ArrayList<Classroom> classrooms;
     private ClassAdapter classAdapter;
+    private FirebaseFirestore db;
     private onFragmentInteractionListener fragmentInteractionListener;
 
     private TextView nothingHere;
@@ -47,7 +60,8 @@ public class ClassListFragment extends Fragment
 
     public ClassListFragment()
     {
-        // Required empty public constructor
+        db = FirebaseFirestore.getInstance();
+        classrooms = new ArrayList<>();
     }
 
     /**
@@ -87,6 +101,7 @@ public class ClassListFragment extends Fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_class_list, container, false);
         InitUI(v);
+        getClassrooms();
         return v;
     }
 
@@ -94,13 +109,13 @@ public class ClassListFragment extends Fragment
     {
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView);
+
+        getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(dividerItemDecoration);
-
-        classAdapter = new ClassAdapter(request);
-        recyclerView.setAdapter(classAdapter);
 
         addButton = v.findViewById(R.id.addButton);
 
@@ -134,13 +149,39 @@ public class ClassListFragment extends Fragment
         }
     }
 
-    @Override
-    public void onStart()
+    private void getClassrooms()
     {
-        super.onStart();
+        ArrayList<Classroom> tempcollection = new ArrayList<>();
+        db.collection("classes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                if (task.isSuccessful())
+                {
+                    for (QueryDocumentSnapshot document : task.getResult())
+                    {
+                        Map<String,Object> fields = document.getData();
+                        ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
+                        tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                    }
+                    // Turn off loading screen
+                    getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
 
-        // To check if there is anything in adapter, if not empty then will remove the middle TextView
-        if(classAdapter.getItemCount() > 0)
-            nothingHere.setVisibility(View.INVISIBLE);
+                    if(task.getResult().isEmpty())
+                        nothingHere.setVisibility(View.VISIBLE);
+                    else
+                    {
+                        classAdapter = new ClassAdapter(request, classrooms);
+                        recyclerView.setAdapter(classAdapter);
+                        classrooms.addAll(tempcollection);
+                        classAdapter.notifyDataSetChanged();
+                    }
+                }
+                else
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
     }
 }

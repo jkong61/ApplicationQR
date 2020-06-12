@@ -128,11 +128,21 @@ public class ResultsFragment extends Fragment
         fetchJsonResponse(url);
     }
 
-    private void fetchJsonResponse(String url)
+    private void fetchJsonResponse(String qrString)
     {
-        // URL to the local development PC to receive the POST data
-        // http://url/api/?sessionid=123&userid=123 (example url)
-        final String requestUrl = String.format("%s&userID=%s",url, currentUser.getUserID());
+
+        String requestUrl;
+        if(currentUser.getType() == 1)
+        {
+            // URL to the local development PC to receive the POST data
+            // http://url/api/?sessionid=123&userid=123 (example url)
+            requestUrl = String.format("%s&userID=%s", qrString, currentUser.getUserID());
+        }
+        else
+        {
+            requestUrl = String.format("%s&userID=%s", qrString, currentUser.getUserID());
+
+        }
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
                 new Response.Listener<JSONObject>()

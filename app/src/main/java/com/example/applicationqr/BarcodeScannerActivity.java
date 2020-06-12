@@ -1,15 +1,21 @@
 package com.example.applicationqr;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraX;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageAnalysisConfig;
+import androidx.camera.core.ImageInfo;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
-import androidx.camera.core.PreviewConfig;
+import androidx.camera.core.impl.ImageAnalysisConfig;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Matrix;
@@ -17,12 +23,12 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.Surface;
-import android.view.TextureView;
 import android.view.ViewGroup;
 
 import android.widget.Toast;
 
 import com.example.applicationqr.model.User;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
@@ -31,6 +37,10 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class BarcodeScannerActivity extends AppCompatActivity implements ImageAnalysis.Analyzer
@@ -38,9 +48,16 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
     private final String TAG = getClass().getName();
     private User currentUser;
     private int REQUEST_CODE_PERMISSIONS = 101;
+    private ExecutorService cameraExecutor;
     private FirebaseVisionBarcodeDetector detector;
 
-    private TextureView textureView;
+    private PreviewView viewFinder;
+    private ProcessCameraProvider cameraProvider;
+    private CameraSelector cameraSelector;
+    private Preview preview;
+    private ImageAnalysis imageAnalysis;
+    private Camera camera;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -53,39 +70,44 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
             startCamera(); //start camera if permission has been granted by user
         else
             ActivityCompat.requestPermissions(this, new String[]{"android.permission.CAMERA"}, REQUEST_CODE_PERMISSIONS);
+
+        cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
     private void InitUI()
     {
-        textureView = findViewById(R.id.texture_view);
+        viewFinder = findViewById(R.id.viewFinder);
     }
 
     private void startCamera()
     {
-        PreviewConfig previewConfig = new PreviewConfig.Builder().setLensFacing(CameraX.LensFacing.BACK).build();
-        Preview preview = new Preview(previewConfig);
-
-        preview.setOnPreviewOutputUpdateListener(output ->
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        cameraProviderFuture.addListener(() ->
         {
-            ViewGroup parent = (ViewGroup) textureView.getParent();
-            parent.removeView(textureView);
-            parent.addView(textureView, 0);
+            try
+            {
+                cameraProvider = cameraProviderFuture.get();
 
-            textureView.setSurfaceTexture(output.getSurfaceTexture());
-            updateTransform();
-        });
+                Log.d(TAG, "startCamera: start lifecycle");
+                cameraProvider.unbindAll();
+                cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
 
-        ImageAnalysisConfig imageAnalysisConfig = new ImageAnalysisConfig.Builder().build();
-        ImageAnalysis imageAnalysis = new ImageAnalysis(imageAnalysisConfig);
+                preview = new Preview.Builder().build();
+                preview.setSurfaceProvider(viewFinder.createSurfaceProvider());
 
-        imageAnalysis.setAnalyzer(this);
+                imageAnalysis = new ImageAnalysis.Builder().build();
+                imageAnalysis.setAnalyzer((Executor) this, this);
 
-        FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build();
+                FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder().setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build();
+                detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
 
-        detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
-
-        CameraX.bindToLifecycle(this, preview, imageAnalysis);
+                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
+            }
+            catch (ExecutionException | InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }, ContextCompat.getMainExecutor(this));
     }
 
     @Override
@@ -105,52 +127,19 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         return checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void updateTransform(){
-        Matrix mx = new Matrix();
-        float w = textureView.getMeasuredWidth();
-        float h = textureView.getMeasuredHeight();
-
-        float cX = w / 2f;
-        float cY = h / 2f;
-
-        int rotationDgr;
-        int rotation = (int)textureView.getRotation();
-
-        switch(rotation){
-            case Surface.ROTATION_0:
-                rotationDgr = 0;
-                break;
-            case Surface.ROTATION_90:
-                rotationDgr = 90;
-                break;
-            case Surface.ROTATION_180:
-                rotationDgr = 180;
-                break;
-            case Surface.ROTATION_270:
-                rotationDgr = 270;
-                break;
-            default:
-                return;
-        }
-
-        mx.postRotate((float)rotationDgr, cX, cY);
-        textureView.setTransform(mx);
-    }
-
     @Override
-    public void analyze(ImageProxy image, int rotationDegrees)
+    public void analyze(ImageProxy image)
     {
-        int rotation = rotationDegreesToFirebaseRotation(rotationDegrees);
-        FirebaseVisionImage visionImage = FirebaseVisionImage.fromMediaImage(image.getImage(), rotation);
+        int degrees = rotationDegreesToFirebaseRotation(image.getImageInfo().getRotationDegrees());
+        @SuppressLint("UnsafeExperimentalUsageError") FirebaseVisionImage visionImage = FirebaseVisionImage.fromMediaImage(image.getImage(), degrees);
 
         detector.detectInImage(visionImage)
                 .addOnSuccessListener(firebaseVisionBarcodes ->
                 {
-//                    Log.d("QrCodeAnalyzer", "something detected");
+                    Log.d("QrCodeAnalyzer", "something detected" + firebaseVisionBarcodes);
                     onQRCodesDetected(firebaseVisionBarcodes);
                 })
                 .addOnFailureListener(e -> Log.e("QrCodeAnalyzer", "something went wrong", e));
-
     }
 
     private void onQRCodesDetected(List<FirebaseVisionBarcode> firebaseVisionBarcodes)
@@ -159,9 +148,9 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         {
             for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes)
             {
-//                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
-//                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
-//                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
+                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
+                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
+                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
 
                 // Return the data to main menu to start another fragment
                 returnReply(barcode);
@@ -199,7 +188,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
             Intent resultIntent = new Intent(this, MainMenuActivity.class);
             resultIntent.putExtra("URL_VALUE", barcode.getDisplayValue());
             setResult(RESULT_OK, resultIntent);
-            finish();
+//            finish();
         }
 
         if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_TEXT && currentUser.getType() == 1)

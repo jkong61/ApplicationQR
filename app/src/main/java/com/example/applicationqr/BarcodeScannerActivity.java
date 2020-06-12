@@ -32,7 +32,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
 import java.util.List;
 
-
 public class BarcodeScannerActivity extends AppCompatActivity implements ImageAnalysis.Analyzer
 {
     private final String TAG = getClass().getName();

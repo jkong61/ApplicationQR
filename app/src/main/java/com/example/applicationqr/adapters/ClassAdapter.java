@@ -1,6 +1,7 @@
 package com.example.applicationqr.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,15 +23,15 @@ import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.model.Classroom;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableReference;
+import com.google.firebase.functions.HttpsCallableResult;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder>
@@ -39,12 +42,14 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
     private ArrayList<Classroom> classrooms;
     private int requestID;
     private FirebaseFirestore db;
+    private FirebaseFunctions firebaseFunctions;
 
     public ClassAdapter(int requestID, ArrayList<Classroom> classes)
     {
         this.requestID = requestID;
         classrooms = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
+        firebaseFunctions = FirebaseFunctions.getInstance();
         classrooms = classes;
     }
 
@@ -72,7 +77,59 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
         return classrooms.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    private void deleteClassroom(int i)
+    {
+        Classroom c = classrooms.get(i);
+        final String path = String.format("/classes/%s/sessions", c.getFirebaseUID());
+        Map<String, Object> data = new HashMap<>();
+        data.put("path", path);
+
+        HttpsCallableReference deleteFn = firebaseFunctions.getHttpsCallable("recursiveDelete");
+        deleteFn.call(data)
+                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+                    @Override
+                    public void onSuccess(HttpsCallableResult httpsCallableResult)
+                    {
+                        // Delete Success and finally delete the classroom document reference
+                        deleteClassroomDoc(i);
+                        Log.d(TAG, "onSuccess: Sessions deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Delete failed
+                        Log.e(TAG, "onFailure: ", e);
+                    }
+                });
+    }
+
+    private void deleteClassroomDoc(int i)
+    {
+        db.collection("classes")
+                .document(classrooms.get(i).getFirebaseUID())
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                classrooms.remove(i);
+                notifyItemRemoved(i);
+                Toast.makeText(thisContext, "Successfully deleted classroom!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Log.d(TAG, "onFailure: Failed to delete document");
+            }
+        });
+
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
     {
         public TextView className, classCode, classEnrolments;
 
@@ -83,6 +140,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
             classCode = itemView.findViewById(R.id.class_code);
             classEnrolments = itemView.findViewById(R.id.class_enrolment);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -90,7 +148,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
         {
             switch (requestID)
             {
-                case(R.id.button_register_student):
+                case (R.id.button_register_student):
                     //TODO need to test
                     Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
                     Bundle bundle = new Bundle();
@@ -99,7 +157,11 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                     ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_URL_REQUEST);
                     break;
 
-                case(R.id.button_take_attendance):
+                case (R.id.button_classes):
+                    // Open Session Fragment
+                    break;
+
+                case (R.id.button_take_attendance):
                     int i = getAdapterPosition();
                     Classroom c = classrooms.get(i);
                     FragmentManager manager = ((AppCompatActivity) thisContext).getSupportFragmentManager();
@@ -109,31 +171,43 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                     break;
             }
         }
-    }
 
-    private void getClassrooms()
-    {
-        ArrayList<Classroom> tempcollection = new ArrayList<>();
-        db.collection("classes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        @Override
+        public boolean onLongClick(View v)
         {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            if (requestID == R.id.button_classes)
             {
-                if (task.isSuccessful())
+                final AlertDialog.Builder builder = new AlertDialog.Builder(thisContext);
+                // Add the buttons
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
-                    for (QueryDocumentSnapshot document : task.getResult())
+                    public void onClick(DialogInterface dialog, int id)
                     {
-                        Map<String,Object> fields = document.getData();
-                        ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
-                        tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
-                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        // User clicked OK button
+                        Toast.makeText(thisContext, "Deleting classroom..", Toast.LENGTH_SHORT).show();
+
+                        // Delete the document on Firestore
+                        // Need to delete subcollection first before deleting document
+                        deleteClassroom(getAdapterPosition());
                     }
-                    classrooms.addAll(tempcollection);
-                    notifyDataSetChanged();
-                }
-                else
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        // Do nothing
+                    }
+                });
+                builder.setTitle("Confirm deletion");
+                builder.setMessage("Are you sure you want to delete this classroom?");
+
+                // Create the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
             }
-        });
+            return false;
+        }
     }
 }
+

@@ -83,7 +83,8 @@ public class DisplayQRCodeFragment extends Fragment {
         }
         else
         {
-            qrCode.setImageBitmap(codeGenerator.getQRBitmap(currentClassroom.getFirebaseUID(), getContext()));
+            final String url = String.format("%s/attendance?cID=%s&sID=%s",getString(R.string.cloud_functions),currentClassroom.getFirebaseUID(),"sessionID");
+            qrCode.setImageBitmap(codeGenerator.getQRBitmap(url, getContext()));
             qrCodePurpose.setText(String.format("Attendance code for Class : %s", currentClassroom.getClassCode() ));
         }
         return v;

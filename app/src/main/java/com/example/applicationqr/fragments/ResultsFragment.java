@@ -132,13 +132,15 @@ public class ResultsFragment extends Fragment
     {
 
         String requestUrl;
-        if(currentUser.getType() == 1)
+        if(currentUser.getType() == 1) // type 1 is teacher
         {
-            // URL to the local development PC to receive the POST data
-            // http://url/api/?sessionid=123&userid=123 (example url)
-            requestUrl = String.format("%s&userID=%s", qrString, currentUser.getUserID());
+            String[] arr = qrString.split("#",2);
+            // Log.d(TAG, "fetchJsonResponse: " + qrString);
+
+            // http://url/api/?cID=123&uID=123 (example url)
+            requestUrl = String.format("%s/register?cID=%s&uID=%s", getString(R.string.cloud_functions), arr[0], arr[1]);
         }
-        else
+        else // student
         {
             requestUrl = String.format("%s&userID=%s", qrString, currentUser.getUserID());
 

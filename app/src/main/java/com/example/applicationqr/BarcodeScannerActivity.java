@@ -36,6 +36,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
 {
     private final String TAG = getClass().getName();
     private User currentUser;
+    private String classID;
     private int REQUEST_CODE_PERMISSIONS = 101;
     private FirebaseVisionBarcodeDetector detector;
 
@@ -158,9 +159,9 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         {
             for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes)
             {
-//                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
-//                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
-//                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
+                Log.d(TAG, "onQRCodesDetected_TYPE: " + barcode.getDisplayValue());
+                Log.d(TAG, "onQRCodesDetected_RAW: " + barcode.getRawValue());
+                Log.d(TAG, "onQRCodesDetected_VALUE: " + barcode.toString());
 
                 // Return the data to main menu to start another fragment
                 returnReply(barcode);
@@ -189,6 +190,8 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
     {
         Intent intent = getIntent();
         currentUser = intent.getExtras().getParcelable("USER");
+        if(currentUser.getType() == 1)
+            classID = intent.getStringExtra("classID");
     }
 
     private void returnReply(FirebaseVisionBarcode barcode)
@@ -204,7 +207,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_TEXT && currentUser.getType() == 1)
         {
             Intent resultIntent = new Intent(this, MainMenuActivity.class);
-            resultIntent.putExtra("STUDENT_ID", barcode.getDisplayValue());
+            resultIntent.putExtra("STUDENT_ID", String.format("%s#%s", classID, barcode.getDisplayValue()));
             setResult(RESULT_OK, resultIntent);
             finish();
         }

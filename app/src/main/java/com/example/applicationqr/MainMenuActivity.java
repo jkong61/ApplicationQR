@@ -42,7 +42,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Toolbar mainMenuToolbar;
-    public final int BARCODE_REGISTER_REQUEST = 2;
+    public final static int BARCODE_REGISTER_REQUEST = 2;
     private MainMenuFragment mainMenuFragment;
 
     @Override
@@ -269,8 +269,10 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
 
         if(requestCode == BARCODE_REGISTER_REQUEST && resultCode == RESULT_OK)
         {
-            String url = data.getStringExtra("STUDENT_ID");
-            Log.d(TAG, "onActivityResult: ID "+ url);
+            String student_id = data.getStringExtra("STUDENT_ID");
+            Log.d(TAG, "onActivityResult: ID "+ student_id);
+            ResultsFragment resultsFragment = ResultsFragment.newInstance(currentUser, student_id);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, resultsFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
         }
     }
 }

@@ -153,8 +153,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                     Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("USER", MainMenuActivity.currentUser);
+                    bundle.putString("classID", classrooms.get(getAdapterPosition()).getFirebaseUID());
                     requestIntent.putExtras(bundle);
-                    ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_URL_REQUEST);
+                    ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_REGISTER_REQUEST);
                     break;
 
                 case (R.id.button_classes):
@@ -172,11 +173,13 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
             }
         }
 
+        // Long Click for delete via Cloud Functions and Delete the Firestore Document
         @Override
         public boolean onLongClick(View v)
         {
             if (requestID == R.id.button_classes)
             {
+                // Show Alert Dialog before deleting
                 final AlertDialog.Builder builder = new AlertDialog.Builder(thisContext);
                 // Add the buttons
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()

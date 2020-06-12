@@ -27,6 +27,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import org.w3c.dom.Text;
 
@@ -154,7 +155,10 @@ public class ClassListFragment extends Fragment
     private void getClassrooms()
     {
         ArrayList<Classroom> tempcollection = new ArrayList<>();
-        db.collection("classes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+
+        Source source = Source.DEFAULT;
+
+        db.collection("classes").get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)

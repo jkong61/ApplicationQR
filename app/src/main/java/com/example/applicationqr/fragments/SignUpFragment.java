@@ -201,5 +201,4 @@ public class SignUpFragment extends Fragment
             throw new ClassCastException(context.toString() + "must implement onFragmentInteractionListener");
         }
     }
-
 }

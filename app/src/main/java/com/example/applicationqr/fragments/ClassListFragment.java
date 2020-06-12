@@ -31,6 +31,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -159,6 +161,7 @@ public class ClassListFragment extends Fragment
             {
                 if (task.isSuccessful())
                 {
+                    classrooms.clear();
                     for (QueryDocumentSnapshot document : task.getResult())
                     {
                         Map<String,Object> fields = document.getData();
@@ -173,6 +176,7 @@ public class ClassListFragment extends Fragment
                         nothingHere.setVisibility(View.VISIBLE);
                     else
                     {
+                        Collections.sort(tempcollection, Classroom.nameComparator);
                         classAdapter = new ClassAdapter(request, classrooms);
                         recyclerView.setAdapter(classAdapter);
                         classrooms.addAll(tempcollection);

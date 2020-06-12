@@ -90,7 +90,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
         {
             switch (requestID)
             {
-                case(R.id.button_classes):
+                case(R.id.button_register_student):
                     //TODO need to test
                     Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
                     Bundle bundle = new Bundle();

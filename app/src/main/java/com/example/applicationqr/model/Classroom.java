@@ -3,6 +3,8 @@ package com.example.applicationqr.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Comparator;
+
 public class Classroom implements Parcelable
 {
     public static final Creator<Classroom> CREATOR = new Creator<Classroom>()
@@ -74,4 +76,12 @@ public class Classroom implements Parcelable
         dest.writeString(classCode);
         dest.writeInt(numEnrol);
     }
+
+    public static Comparator<Classroom> nameComparator = new Comparator<Classroom>()
+    {
+        @Override
+        public int compare(Classroom jc1, Classroom jc2) {
+            return (int) (jc1.getClassName().compareTo(jc2.getClassName()));
+        }
+    };
 }

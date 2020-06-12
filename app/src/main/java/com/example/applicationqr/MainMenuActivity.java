@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.applicationqr.fragments.AddClassFragment;
 import com.example.applicationqr.fragments.ClassListFragment;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.fragments.MainMenuFragment;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 public class MainMenuActivity extends AppCompatActivity implements onFragmentInteractionListener
 {
-    private static final String TAG = "MainMenuActivity";
+    private static final String TAG = MainMenuActivity.class.getName();
     public final static int BARCODE_URL_REQUEST = 1;
     public static User currentUser;
     private FirebaseAuth mAuth;
@@ -232,6 +233,15 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
 
         else if(TAG.equals(ClassListFragment.class.getName()))
         {
+            // Start new Class fragment
+            findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+            AddClassFragment addClassFragment = AddClassFragment.newInstance(null, null);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, addClassFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+        }
+
+        else if(TAG.equals(AddClassFragment.class.getName()))
+        {
+            // Complete the Add Class fragment
             getSupportFragmentManager().popBackStack();
             findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
         }

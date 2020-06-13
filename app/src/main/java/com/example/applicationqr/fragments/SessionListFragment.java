@@ -57,7 +57,7 @@ public class SessionListFragment extends Fragment
     private int request;
     private ArrayList<ClassSession> classSessions;
 
-    private TextView nothingHere;
+    private TextView nothingHere, pleaseWait;
     private RecyclerView recyclerViewSession;
     private FloatingActionButton addButtonSession;
     private FirebaseFirestore db;
@@ -117,6 +117,8 @@ public class SessionListFragment extends Fragment
 
     private void InitUI(View v)
     {
+        getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+
         // Change title on the App Bar
         Toolbar mainMenuToolbar = getActivity().findViewById(R.id.main_menu_toolbar);
         if(request == R.id.button_take_attendance)
@@ -124,6 +126,7 @@ public class SessionListFragment extends Fragment
         else
             mainMenuToolbar.setTitle("Sessions (View Details)");
 
+        pleaseWait = v.findViewById(R.id.please_wait);
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerViewSession = v.findViewById(R.id.recyclerView_session);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -132,6 +135,9 @@ public class SessionListFragment extends Fragment
         recyclerViewSession.setLayoutManager(layoutManager);
 
         addButtonSession = v.findViewById(R.id.add_session_button);
+
+        if(request == R.id.button_classes)
+            addButtonSession.setVisibility(View.INVISIBLE);
 
         addButtonSession.setOnClickListener(new View.OnClickListener()
         {
@@ -197,6 +203,8 @@ public class SessionListFragment extends Fragment
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
+                pleaseWait.setVisibility(View.INVISIBLE);
+                getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
                 if (task.isSuccessful())
                 {
                     classSessions.clear();

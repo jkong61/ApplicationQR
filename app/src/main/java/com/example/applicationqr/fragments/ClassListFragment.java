@@ -54,7 +54,7 @@ public class ClassListFragment extends Fragment
     private FirebaseFirestore db;
     private onFragmentInteractionListener fragmentInteractionListener;
 
-    private TextView nothingHere;
+    private TextView nothingHere, pleaseWait;
     private RecyclerView recyclerView;
     private FloatingActionButton addButton;
 
@@ -115,6 +115,7 @@ public class ClassListFragment extends Fragment
         else
             mainMenuToolbar.setTitle("Classrooms (View Details)");
 
+        pleaseWait = v.findViewById(R.id.please_wait);
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView_class);
 
@@ -170,6 +171,7 @@ public class ClassListFragment extends Fragment
                 if (task.isSuccessful())
                 {
                     classrooms.clear();
+                    pleaseWait.setVisibility(View.INVISIBLE);
 
                     for (QueryDocumentSnapshot document : task.getResult())
                     {

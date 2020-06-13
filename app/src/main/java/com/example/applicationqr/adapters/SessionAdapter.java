@@ -22,6 +22,7 @@ import com.example.applicationqr.BarcodeScannerActivity;
 import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
+import com.example.applicationqr.fragments.StudentAttendanceFragment;
 import com.example.applicationqr.model.ClassSession;
 import com.example.applicationqr.model.Classroom;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -121,6 +122,11 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.MyViewHo
             {
                 DisplayQRCodeFragment displayCodeFragment = DisplayQRCodeFragment.newInstance(MainMenuActivity.currentUser, classSessions.get(i));
                 manager.beginTransaction().replace(R.id.main_menu_view, displayCodeFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+            }
+            else
+            {
+                StudentAttendanceFragment studentAttendanceFragment = StudentAttendanceFragment.newInstance(classSessions.get(i),null,null);
+                manager.beginTransaction().replace(R.id.main_menu_view, studentAttendanceFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
         }
 

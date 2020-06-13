@@ -119,13 +119,13 @@ public class ResultsFragment extends Fragment
         super.onStart();
         requestQueue = MySingleton.getInstance(getContext()).getRequestQueue();
         confirmButton.setEnabled(false);
+        fetchJsonResponse(url);
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        fetchJsonResponse(url);
     }
 
     private void fetchJsonResponse(String qrString)
@@ -139,10 +139,11 @@ public class ResultsFragment extends Fragment
 
             // http://url/api/?cID=123&uID=123 (example url)
             requestUrl = String.format("%s/register?cID=%s&uID=%s", getString(R.string.cloud_functions), arr[0], arr[1]);
+            Log.d(TAG, "fetchJsonResponse: " + requestUrl);
         }
         else // student
         {
-            requestUrl = String.format("%s&userID=%s", qrString, currentUser.getUserID());
+            requestUrl = String.format("%s&uID=%s", qrString, currentUser.getFirebaseUID());
 
         }
 
@@ -155,7 +156,7 @@ public class ResultsFragment extends Fragment
                         try
                         {
                             loadingpanel.setVisibility(View.INVISIBLE);
-                            String result = "Message " + response.getString("message");
+                            String result = "Message: " + response.getString("message");
                             Log.d(TAG, String.format("onResponse: %s", result));
                             Toast.makeText(getContext(),response.getString("message"),Toast.LENGTH_SHORT).show();
                             resultLabel.setText(result);

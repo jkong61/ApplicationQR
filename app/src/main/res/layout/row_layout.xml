@@ -34,4 +34,5 @@
         android:text="TextView"
         app:layout_constraintBaseline_toBaselineOf="@id/class_title"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,9 +29,11 @@
 
     <TextView
         android:id="@+id/qr_code_display_purpose"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="30dp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/qr_code_display_header"
         app:layout_constraintStart_toStartOf="@+id/qr_code_display_header"
         app:layout_constraintTop_toBottomOf="@+id/qr_code_display_header" />

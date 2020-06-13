@@ -127,7 +127,6 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                 Log.d(TAG, "onFailure: Failed to delete document");
             }
         });
-
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
@@ -150,29 +149,26 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
             int i = getAdapterPosition();
             FragmentManager manager = ((AppCompatActivity) thisContext).getSupportFragmentManager();
             Classroom c = classrooms.get(i);
-            switch (requestID)
+
+            if (requestID == R.id.button_register_student)
+            {//TODO need to test
+                Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("USER", MainMenuActivity.currentUser);
+                bundle.putString("classID", c.getFirebaseUID());
+                requestIntent.putExtras(bundle);
+                ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_REGISTER_REQUEST);
+            }
+            else if (requestID == R.id.button_classes)
             {
-                case (R.id.button_register_student):
-                    //TODO need to test
-                    Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("USER", MainMenuActivity.currentUser);
-                    bundle.putString("classID", c.getFirebaseUID());
-                    requestIntent.putExtras(bundle);
-                    ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_REGISTER_REQUEST);
-                    break;
-
-                case (R.id.button_classes):
-                    // Open Session Fragment
-                    SessionListFragment sessionListFragment = SessionListFragment.newInstance(c.getFirebaseUID(),null);
-                    manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-                    break;
-
-                case (R.id.button_take_attendance):
-                    // TODO replace url with api url + firebase classroom UID
-                    DisplayQRCodeFragment displayCodeFragment = DisplayQRCodeFragment.newInstance(MainMenuActivity.currentUser, c);
-                    manager.beginTransaction().replace(R.id.main_menu_view, displayCodeFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
-                    break;
+                SessionListFragment sessionListFragment_classes = SessionListFragment.newInstance(c.getFirebaseUID(), requestID);
+                manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment_classes).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+            }
+            else if (requestID == R.id.button_take_attendance)
+            {// TODO replace url with api url + firebase classroom UID
+                // Open Session Fragment
+                SessionListFragment sessionListFragment_attendance = SessionListFragment.newInstance(c.getFirebaseUID(), requestID);
+                manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment_attendance).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
         }
 

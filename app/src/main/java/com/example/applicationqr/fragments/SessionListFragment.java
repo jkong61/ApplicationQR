@@ -15,17 +15,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.applicationqr.R;
+import com.example.applicationqr.adapters.SessionAdapter;
 import com.example.applicationqr.model.ClassSession;
-import com.example.applicationqr.model.Classroom;
 import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -51,13 +54,14 @@ public class SessionListFragment extends Fragment
 
     // TODO: Rename and change types of parameters
     private String classroomFireStoreID;
-    private String mParam2;
+    private int request;
     private ArrayList<ClassSession> classSessions;
 
     private TextView nothingHere;
     private RecyclerView recyclerViewSession;
     private FloatingActionButton addButtonSession;
     private FirebaseFirestore db;
+    private SessionAdapter sessionAdapter;
 
     private onFragmentInteractionListener fragmentInteractionListener;
 
@@ -79,12 +83,12 @@ public class SessionListFragment extends Fragment
      * @return A new instance of fragment SessionListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SessionListFragment newInstance(String param1, String param2)
+    public static SessionListFragment newInstance(String param1, int param2)
     {
         SessionListFragment fragment = new SessionListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,7 +100,7 @@ public class SessionListFragment extends Fragment
         if (getArguments() != null)
         {
             classroomFireStoreID = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            request = getArguments().getInt(ARG_PARAM2);
         }
     }
 
@@ -115,7 +119,10 @@ public class SessionListFragment extends Fragment
     {
         // Change title on the App Bar
         Toolbar mainMenuToolbar = getActivity().findViewById(R.id.main_menu_toolbar);
-        mainMenuToolbar.setTitle("Sessions");
+        if(request == R.id.button_take_attendance)
+            mainMenuToolbar.setTitle("Sessions (Take Attendance)");
+        else
+            mainMenuToolbar.setTitle("Sessions (View Details)");
 
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerViewSession = v.findViewById(R.id.recyclerView_session);
@@ -131,6 +138,8 @@ public class SessionListFragment extends Fragment
             @Override
             public void onClick(View v)
             {
+                Toast.makeText(getContext(), "Adding session..", Toast.LENGTH_SHORT).show();
+
                 Map<String,Object> data = new HashMap<>();
                 data.put("sessiontime", FieldValue.serverTimestamp());
                 data.put("attended", new ArrayList<>());
@@ -141,10 +150,24 @@ public class SessionListFragment extends Fragment
                     @Override
                     public void onSuccess(DocumentReference documentReference)
                     {
+                        sessionRef.document(documentReference.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+                        {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot)
+                            {
+                                Toast.makeText(getContext(), "Successfully added session!", Toast.LENGTH_SHORT).show();
+
+                                Map<String, Object> fields = documentSnapshot.getData();
+                                ArrayList<DocumentReference> docReferences = (ArrayList<DocumentReference>) fields.get("attended");
+
+                                classSessions.add(new ClassSession(documentSnapshot.getId(), classroomFireStoreID, (Timestamp) fields.get("sessiontime"), docReferences.size()));
+                                sessionAdapter.notifyDataSetChanged();
+                            }
+                        });
+
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                     }
                 });
-                // fragmentInteractionListener.onFragmentMessage(TAG, null);
             }
         });
     }
@@ -176,14 +199,26 @@ public class SessionListFragment extends Fragment
             {
                 if (task.isSuccessful())
                 {
+                    classSessions.clear();
                     for (QueryDocumentSnapshot document : task.getResult())
                     {
+                        Map<String,Object> fields = document.getData();
+                        ArrayList<DocumentReference> docReferences = (ArrayList<DocumentReference>) fields.get("attended");
+
+                        tempcollection.add(new ClassSession(document.getId(), classroomFireStoreID, (Timestamp) fields.get("sessiontime"), docReferences.size()));
                         Log.d(TAG, document.getId() + " => " + document.getData());
                     }
                     if(task.getResult().isEmpty())
                     {
                         nothingHere.setVisibility(View.VISIBLE);
                         Log.d(TAG, "onComplete: Here!");
+                    }
+                    else
+                    {
+                        sessionAdapter = new SessionAdapter(request, classSessions);
+                        recyclerViewSession.setAdapter(sessionAdapter);
+                        classSessions.addAll(tempcollection);
+                        sessionAdapter.notifyDataSetChanged();
                     }
                 }
                 else

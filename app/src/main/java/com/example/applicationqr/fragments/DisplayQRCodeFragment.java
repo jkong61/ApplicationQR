@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.applicationqr.model.ClassSession;
 import com.example.applicationqr.model.Classroom;
 import com.example.applicationqr.model.QRGenerator;
 import com.example.applicationqr.R;
@@ -31,7 +32,7 @@ public class DisplayQRCodeFragment extends Fragment {
     private ImageView qrCode;
     // TODO: Rename and change types of parameters
     private User currentUser;
-    private Classroom currentClassroom;
+    private ClassSession currentClassroomSession;
 
     public DisplayQRCodeFragment()
     {
@@ -47,7 +48,7 @@ public class DisplayQRCodeFragment extends Fragment {
      * @return A new instance of fragment DisplayQRCodeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DisplayQRCodeFragment newInstance(User param1, Classroom param2)
+    public static DisplayQRCodeFragment newInstance(User param1, ClassSession param2)
     {
         DisplayQRCodeFragment fragment = new DisplayQRCodeFragment();
         Bundle args = new Bundle();
@@ -63,7 +64,7 @@ public class DisplayQRCodeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             currentUser = getArguments().getParcelable(ARG_PARAM1);
-            currentClassroom = getArguments().getParcelable(ARG_PARAM2);
+            currentClassroomSession = getArguments().getParcelable(ARG_PARAM2);
         }
         codeGenerator = QRGenerator.getInstance();
     }
@@ -83,9 +84,9 @@ public class DisplayQRCodeFragment extends Fragment {
         }
         else
         {
-            final String url = String.format("%s/attendance?cID=%s&sID=%s",getString(R.string.cloud_functions),currentClassroom.getFirebaseUID(),"sessionID");
+            final String url = String.format("%s/attendance?cID=%s&sID=%s", getString(R.string.cloud_functions), currentClassroomSession.getClassFirebaseUID(), currentClassroomSession.getFirebaseUID());
             qrCode.setImageBitmap(codeGenerator.getQRBitmap(url, getContext()));
-            qrCodePurpose.setText(String.format("Attendance code for Class : %s", currentClassroom.getClassCode() ));
+            qrCodePurpose.setText(String.format("Attendance code for Class Session: %s", currentClassroomSession.getSessionTime().toString() ));
         }
         return v;
     }

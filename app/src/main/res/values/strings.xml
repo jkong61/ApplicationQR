@@ -5,8 +5,6 @@
     <string name="teacher_menu">Teacher Menu</string>
     <string name="student_menu">Student Menu</string>
     <string name="cloud_functions">https://us-central1-android-project-65a16.cloudfunctions.net/app</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="wait_result">Please wait..</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -108,8 +108,12 @@ public class ClassListFragment extends Fragment
     private void InitUI(View v)
     {
         Toolbar mainMenuToolbar = getActivity().findViewById(R.id.main_menu_toolbar);
-        mainMenuToolbar.setTitle("Classrooms");
-
+        if(request == R.id.button_take_attendance)
+            mainMenuToolbar.setTitle("Classrooms (Take Attendance)");
+        else if (request == R.id.button_register_student)
+            mainMenuToolbar.setTitle("Classrooms (Register Student)");
+        else
+            mainMenuToolbar.setTitle("Classrooms (View Details)");
 
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView_class);

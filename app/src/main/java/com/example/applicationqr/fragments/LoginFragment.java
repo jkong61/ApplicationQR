@@ -119,6 +119,7 @@ public class LoginFragment extends Fragment
                 else
                 {
                     Toast.makeText(getContext(), "Logging in..", Toast.LENGTH_SHORT).show();
+                    login_button.setEnabled(false);
                     loading_panel.setVisibility(View.VISIBLE);
                     SignInUser(email,password);
                 }
@@ -159,6 +160,7 @@ public class LoginFragment extends Fragment
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    login_button.setEnabled(true);
                     loading_panel.setVisibility(View.INVISIBLE);
                     Toast.makeText(getContext(), String.format("Authentication failed. %s", task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                 }

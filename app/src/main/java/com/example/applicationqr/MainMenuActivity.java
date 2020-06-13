@@ -22,6 +22,7 @@ import com.example.applicationqr.fragments.ClassListFragment;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.fragments.MainMenuFragment;
 import com.example.applicationqr.fragments.ResultsFragment;
+import com.example.applicationqr.fragments.SessionListFragment;
 import com.example.applicationqr.fragments.UpdateProfileFragment;
 import com.example.applicationqr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -83,6 +84,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
     {
         // Initialize the toolbar
         mainMenuToolbar = findViewById(R.id.main_menu_toolbar);
+        mainMenuToolbar.setTitle("Main Menu");
         setSupportActionBar(mainMenuToolbar);
         mainMenuToolbar.getOverflowIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
     }
@@ -228,6 +230,11 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
         else if(TAG.equals(ResultsFragment.class.getName()))
         {
             getSupportFragmentManager().popBackStack();
+            findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+        }
+
+        else if(TAG.equals(SessionListFragment.class.getName()))
+        {
             findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
         }
 

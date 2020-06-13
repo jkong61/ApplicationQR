@@ -17,51 +17,57 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.applicationqr.R;
-import com.example.applicationqr.adapters.ClassAdapter;
+import com.example.applicationqr.model.ClassSession;
 import com.example.applicationqr.model.Classroom;
 import com.example.applicationqr.onFragmentInteractionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ClassListFragment#newInstance} factory method to
+ * Use the {@link SessionListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ClassListFragment extends Fragment
+public class SessionListFragment extends Fragment
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = SessionListFragment.class.getName();
 
     // TODO: Rename and change types of parameters
-    private String TAG = ClassListFragment.class.getName();
-    private String mParam1;
-    private int request;
-    private ArrayList<Classroom> classrooms;
-    private ClassAdapter classAdapter;
-    private FirebaseFirestore db;
-    private onFragmentInteractionListener fragmentInteractionListener;
+    private String classroomFireStoreID;
+    private String mParam2;
+    private ArrayList<ClassSession> classSessions;
 
     private TextView nothingHere;
-    private RecyclerView recyclerView;
-    private FloatingActionButton addButton;
+    private RecyclerView recyclerViewSession;
+    private FloatingActionButton addButtonSession;
+    private FirebaseFirestore db;
 
-    public ClassListFragment()
+    private onFragmentInteractionListener fragmentInteractionListener;
+
+
+    public SessionListFragment()
     {
         db = FirebaseFirestore.getInstance();
-        classrooms = new ArrayList<>();
+        classSessions = new ArrayList<>();
+
+        // Required empty public constructor
     }
 
     /**
@@ -70,15 +76,15 @@ public class ClassListFragment extends Fragment
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ClassListFragment.
+     * @return A new instance of fragment SessionListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ClassListFragment newInstance(String param1, int param2)
+    public static SessionListFragment newInstance(String param1, String param2)
     {
-        ClassListFragment fragment = new ClassListFragment();
+        SessionListFragment fragment = new SessionListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putInt(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,8 +95,8 @@ public class ClassListFragment extends Fragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            request = getArguments().getInt(ARG_PARAM2);
+            classroomFireStoreID = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -99,44 +105,48 @@ public class ClassListFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_class_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_session_list, container, false);
         InitUI(v);
-        getClassrooms();
+        getClassSessions();
         return v;
     }
 
     private void InitUI(View v)
     {
+        // Change title on the App Bar
         Toolbar mainMenuToolbar = getActivity().findViewById(R.id.main_menu_toolbar);
-        mainMenuToolbar.setTitle("Classrooms");
-
+        mainMenuToolbar.setTitle("Sessions");
 
         nothingHere = v.findViewById(R.id.nothing_here);
-        recyclerView = v.findViewById(R.id.recyclerView_class);
-
-        getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-
+        recyclerViewSession = v.findViewById(R.id.recyclerView_session);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerViewSession.getContext(), layoutManager.getOrientation());
+        recyclerViewSession.addItemDecoration(dividerItemDecoration);
+        recyclerViewSession.setLayoutManager(layoutManager);
 
-        addButton = v.findViewById(R.id.addButton);
+        addButtonSession = v.findViewById(R.id.add_session_button);
 
-        // Checks from which button did the click originate from to hide the floating action button
-        if(request == R.id.button_register_student || request == R.id.button_take_attendance)
-            addButton.setVisibility(View.INVISIBLE);
-        else
+        addButtonSession.setOnClickListener(new View.OnClickListener()
         {
-            addButton.setOnClickListener(new View.OnClickListener()
+            @Override
+            public void onClick(View v)
             {
-                @Override
-                public void onClick(View v)
+                Map<String,Object> data = new HashMap<>();
+                data.put("sessiontime", FieldValue.serverTimestamp());
+                data.put("attended", new ArrayList<>());
+
+                CollectionReference sessionRef = db.collection("classes").document(classroomFireStoreID).collection("sessions");
+                sessionRef.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>()
                 {
-                    fragmentInteractionListener.onFragmentMessage(TAG, null);
-                }
-            });
-        }
+                    @Override
+                    public void onSuccess(DocumentReference documentReference)
+                    {
+                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                    }
+                });
+                // fragmentInteractionListener.onFragmentMessage(TAG, null);
+            }
+        });
     }
 
     @Override
@@ -153,43 +163,33 @@ public class ClassListFragment extends Fragment
         }
     }
 
-    private void getClassrooms()
+    private void getClassSessions()
     {
-        ArrayList<Classroom> tempcollection = new ArrayList<>();
+        ArrayList<ClassSession> tempcollection = new ArrayList<>();
         Source source = Source.DEFAULT;
 
-        db.collection("classes").get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        CollectionReference sessionRef = db.collection("classes").document(classroomFireStoreID).collection("sessions");
+        sessionRef.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 if (task.isSuccessful())
                 {
-                    classrooms.clear();
-
                     for (QueryDocumentSnapshot document : task.getResult())
                     {
-                        Map<String,Object> fields = document.getData();
-                        ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
-                        tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
                         Log.d(TAG, document.getId() + " => " + document.getData());
                     }
-                    // Turn off loading screen
-                    getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
-
                     if(task.getResult().isEmpty())
-                        nothingHere.setVisibility(View.VISIBLE);
-                    else
                     {
-                        Collections.sort(tempcollection, Classroom.nameComparator);
-                        classAdapter = new ClassAdapter(request, classrooms);
-                        recyclerView.setAdapter(classAdapter);
-                        classrooms.addAll(tempcollection);
-                        classAdapter.notifyDataSetChanged();
+                        nothingHere.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "onComplete: Here!");
                     }
                 }
                 else
+                {
                     Log.d(TAG, "Error getting documents: ", task.getException());
+                }
             }
         });
     }

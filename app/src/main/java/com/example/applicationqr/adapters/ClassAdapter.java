@@ -22,6 +22,7 @@ import com.example.applicationqr.BarcodeScannerActivity;
 import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
+import com.example.applicationqr.fragments.SessionListFragment;
 import com.example.applicationqr.model.Classroom;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -146,6 +147,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
         @Override
         public void onClick(View v)
         {
+            int i = getAdapterPosition();
+            FragmentManager manager = ((AppCompatActivity) thisContext).getSupportFragmentManager();
+            Classroom c = classrooms.get(i);
             switch (requestID)
             {
                 case (R.id.button_register_student):
@@ -153,19 +157,18 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
                     Intent requestIntent = new Intent(thisContext, BarcodeScannerActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("USER", MainMenuActivity.currentUser);
-                    bundle.putString("classID", classrooms.get(getAdapterPosition()).getFirebaseUID());
+                    bundle.putString("classID", c.getFirebaseUID());
                     requestIntent.putExtras(bundle);
                     ((AppCompatActivity) thisContext).startActivityForResult(requestIntent, MainMenuActivity.BARCODE_REGISTER_REQUEST);
                     break;
 
                 case (R.id.button_classes):
                     // Open Session Fragment
+                    SessionListFragment sessionListFragment = SessionListFragment.newInstance(c.getFirebaseUID(),null);
+                    manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;
 
                 case (R.id.button_take_attendance):
-                    int i = getAdapterPosition();
-                    Classroom c = classrooms.get(i);
-                    FragmentManager manager = ((AppCompatActivity) thisContext).getSupportFragmentManager();
                     // TODO replace url with api url + firebase classroom UID
                     DisplayQRCodeFragment displayCodeFragment = DisplayQRCodeFragment.newInstance(MainMenuActivity.currentUser, c);
                     manager.beginTransaction().replace(R.id.main_menu_view, displayCodeFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();

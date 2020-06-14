@@ -2,8 +2,6 @@ package com.example.applicationqr.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +16,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.applicationqr.BarcodeScannerActivity;
 import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
 import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.fragments.StudentAttendanceFragment;
 import com.example.applicationqr.model.ClassSession;
-import com.example.applicationqr.model.Classroom;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -53,7 +48,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.MyViewHo
     public SessionAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         thisContext = parent.getContext();
-        View v = LayoutInflater.from(thisContext).inflate(R.layout.row_layout, parent, false);
+        View v = LayoutInflater.from(thisContext).inflate(R.layout.card_layout, parent, false);
 
         return new MyViewHolder(v);
     }
@@ -105,9 +100,9 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.MyViewHo
         public MyViewHolder(@NonNull View itemView)
         {
             super(itemView);
-            sessionAttendance = itemView.findViewById(R.id.class_enrolment);
-            sessionBlank = itemView.findViewById(R.id.class_code);
-            sessionTime = itemView.findViewById(R.id.class_title);
+            sessionAttendance = itemView.findViewById(R.id.card_enrolment);
+            sessionBlank = itemView.findViewById(R.id.card_code);
+            sessionTime = itemView.findViewById(R.id.card_title);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

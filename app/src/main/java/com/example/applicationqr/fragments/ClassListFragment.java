@@ -54,7 +54,7 @@ public class ClassListFragment extends Fragment
     private FirebaseFirestore db;
     private onFragmentInteractionListener fragmentInteractionListener;
 
-    private TextView nothingHere, pleaseWait;
+    private TextView nothingHere;
     private RecyclerView recyclerView;
     private FloatingActionButton addButton;
 
@@ -101,7 +101,10 @@ public class ClassListFragment extends Fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_class_list, container, false);
         InitUI(v);
-        getClassrooms();
+        if(classrooms.isEmpty())
+            getClassrooms();
+        else
+            getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
         return v;
     }
 
@@ -115,19 +118,17 @@ public class ClassListFragment extends Fragment
         else
             mainMenuToolbar.setTitle("Classrooms (View Details)");
 
-        pleaseWait = v.findViewById(R.id.please_wait);
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView_class);
 
         getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        classAdapter = new ClassAdapter(request, classrooms);
+        recyclerView.setAdapter(classAdapter);
 
         addButton = v.findViewById(R.id.addButton);
-
         // Checks from which button did the click originate from to hide the floating action button
         if(request == R.id.button_register_student || request == R.id.button_take_attendance)
             addButton.setVisibility(View.INVISIBLE);
@@ -171,8 +172,6 @@ public class ClassListFragment extends Fragment
                 if (task.isSuccessful())
                 {
                     classrooms.clear();
-                    pleaseWait.setVisibility(View.INVISIBLE);
-
                     for (QueryDocumentSnapshot document : task.getResult())
                     {
                         Map<String,Object> fields = document.getData();
@@ -188,10 +187,8 @@ public class ClassListFragment extends Fragment
                     else
                     {
                         Collections.sort(tempcollection, Classroom.nameComparator);
-                        classAdapter = new ClassAdapter(request, classrooms);
-                        recyclerView.setAdapter(classAdapter);
                         classrooms.addAll(tempcollection);
-                        classAdapter.notifyDataSetChanged();
+                        classAdapter.notifyItemRangeChanged(0, task.getResult().size());
                     }
                 }
                 else

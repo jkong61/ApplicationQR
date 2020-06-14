@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.applicationqr.R;
-import com.example.applicationqr.model.ClassSession;
 import com.example.applicationqr.model.Student;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.MyViewHo
     public StudentAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         thisContext = parent.getContext();
-        View v = LayoutInflater.from(thisContext).inflate(R.layout.row_layout, parent, false);
+        View v = LayoutInflater.from(thisContext).inflate(R.layout.card_layout, parent, false);
         return new MyViewHolder(v);
     }
 
@@ -56,9 +55,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.MyViewHo
         public MyViewHolder(@NonNull View itemView)
         {
             super(itemView);
-            studentAttendance = itemView.findViewById(R.id.class_enrolment);
-            studentID = itemView.findViewById(R.id.class_code);
-            studentName = itemView.findViewById(R.id.class_title);
+            studentAttendance = itemView.findViewById(R.id.card_enrolment);
+            studentID = itemView.findViewById(R.id.card_code);
+            studentName = itemView.findViewById(R.id.card_title);
         }
     }
 }

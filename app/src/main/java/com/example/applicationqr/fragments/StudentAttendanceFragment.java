@@ -48,9 +48,10 @@ public class StudentAttendanceFragment extends Fragment
     private String mParam3;
 
     private FirebaseFunctions firebaseFunctions;
-    private TextView nothingHere, pleaseWait;
+    private TextView nothingHere;
     private RecyclerView recyclerView_students;
     private ArrayList<Student> students;
+    private StudentAdapter studentAdapter;
 
 
     public StudentAttendanceFragment()
@@ -58,6 +59,7 @@ public class StudentAttendanceFragment extends Fragment
         // Required empty public constructor
         firebaseFunctions = FirebaseFunctions.getInstance();
         students = new ArrayList<>();
+        studentAdapter = new StudentAdapter(students);
     }
 
     /**
@@ -108,14 +110,12 @@ public class StudentAttendanceFragment extends Fragment
     {
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView_students = v.findViewById(R.id.recyclerView_students);
-        pleaseWait = v.findViewById(R.id.please_wait);
 
         getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView_students.getContext(), layoutManager.getOrientation());
         recyclerView_students.setLayoutManager(layoutManager);
-        recyclerView_students.addItemDecoration(dividerItemDecoration);
+        recyclerView_students.setAdapter(studentAdapter);
     }
 
     private void getAttendanceList()
@@ -132,18 +132,18 @@ public class StudentAttendanceFragment extends Fragment
             public void onSuccess(HttpsCallableResult httpsCallableResult)
             {
                 getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
-                pleaseWait.setVisibility(View.INVISIBLE);
                 ArrayList<HashMap<String,Object>> result = (ArrayList<HashMap<String, Object>>) httpsCallableResult.getData();
                 if(result.size() > 0)
                 {
+                    students.clear();
                     for (HashMap<String, Object> data: result)
                     {
                         Log.d(TAG, "onSuccess: " + data);
                         Student s = new Student(data.get("id").toString(), data.get("name").toString(), 2, data.get("studentid").toString(), (Integer)data.get("attended"));
                         students.add(s);
+                        studentAdapter.notifyItemInserted(result.size() - 1);
                     }
-//                Log.d(TAG, "onSuccess: " + result);
-                    recyclerView_students.setAdapter(new StudentAdapter(students));
+                    Log.d(TAG, "onSuccess: " + result);
                 }
                 else
                     nothingHere.setVisibility(View.VISIBLE);

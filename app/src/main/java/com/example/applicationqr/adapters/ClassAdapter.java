@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.applicationqr.BarcodeScannerActivity;
 import com.example.applicationqr.MainMenuActivity;
 import com.example.applicationqr.R;
-import com.example.applicationqr.fragments.DisplayQRCodeFragment;
 import com.example.applicationqr.fragments.SessionListFragment;
 import com.example.applicationqr.model.Classroom;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -59,7 +58,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
     public ClassAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         thisContext = parent.getContext();
-        View v = LayoutInflater.from(thisContext).inflate(R.layout.row_layout, parent, false);
+        View v = LayoutInflater.from(thisContext).inflate(R.layout.card_layout, parent, false);
         return new MyViewHolder(v);
     }
 
@@ -136,9 +135,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
         public MyViewHolder(@NonNull View itemView)
         {
             super(itemView);
-            className = itemView.findViewById(R.id.class_title);
-            classCode = itemView.findViewById(R.id.class_code);
-            classEnrolments = itemView.findViewById(R.id.class_enrolment);
+            className = itemView.findViewById(R.id.card_title);
+            classCode = itemView.findViewById(R.id.card_code);
+            classEnrolments = itemView.findViewById(R.id.card_enrolment);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -161,13 +160,13 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.MyViewHolder
             }
             else if (requestID == R.id.button_classes)
             {
-                SessionListFragment sessionListFragment_classes = SessionListFragment.newInstance(c.getFirebaseUID(), requestID);
+                SessionListFragment sessionListFragment_classes = SessionListFragment.newInstance(c, requestID);
                 manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment_classes).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
             else if (requestID == R.id.button_take_attendance)
             {// TODO replace url with api url + firebase classroom UID
                 // Open Session Fragment
-                SessionListFragment sessionListFragment_attendance = SessionListFragment.newInstance(c.getFirebaseUID(), requestID);
+                SessionListFragment sessionListFragment_attendance = SessionListFragment.newInstance(c, requestID);
                 manager.beginTransaction().replace(R.id.main_menu_view, sessionListFragment_attendance).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
         }

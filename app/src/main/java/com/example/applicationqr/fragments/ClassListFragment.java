@@ -118,8 +118,6 @@ public class ClassListFragment extends Fragment
         nothingHere = v.findViewById(R.id.nothing_here);
         recyclerView = v.findViewById(R.id.recyclerView_class);
 
-        getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         classAdapter = new ClassAdapter(request, classrooms);
@@ -170,6 +168,8 @@ public class ClassListFragment extends Fragment
                 {
                     if(classrooms.size() != task.getResult().size())
                     {
+                        getActivity().findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+
                         classrooms.clear();
                         for (QueryDocumentSnapshot document : task.getResult())
                         {

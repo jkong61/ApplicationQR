@@ -171,6 +171,9 @@ public class SessionListFragment extends Fragment
 
                                 classSessions.add(new ClassSession(documentSnapshot.getId(), currentClassroom.getFirebaseUID(), (Timestamp) fields.get("sessiontime"), docReferences.size()));
                                 sessionAdapter.notifyDataSetChanged();
+                                if(classSessions.size() > 0)
+                                    nothingHere.setVisibility(View.INVISIBLE);
+
                             }
                         });
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -95,6 +96,9 @@ public class MainMenuFragment extends Fragment
 
     private void InitUI(View v, int type)
     {
+        Toolbar mainMenuToolbar = getActivity().findViewById(R.id.main_menu_toolbar);
+        mainMenuToolbar.setTitle("Main Menu");
+
         mainMenuHeader = v.findViewById(R.id.menu_layout_header);
         mainMenuHeader.setText(String.format("Welcome back, %s.", userObj.getName()));
 

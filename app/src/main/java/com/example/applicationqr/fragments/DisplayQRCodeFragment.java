@@ -79,11 +79,13 @@ public class DisplayQRCodeFragment extends Fragment {
         TextView qrCodePurpose = v.findViewById(R.id.qr_code_display_purpose);
         if(currentUser.getType() == 2)
         {
+            // Student only display Firebase UID
             qrCode.setImageBitmap(codeGenerator.getQRBitmap(currentUser.getFirebaseUID(), getContext()));
             qrCodePurpose.setText("code for Student Registration");
         }
         else
         {
+            // Teacher provides link to HTTPS request API endpoint
             final String url = String.format("%s/attendance?cID=%s&sID=%s", getString(R.string.cloud_functions), currentClassroomSession.getClassFirebaseUID(), currentClassroomSession.getFirebaseUID());
             qrCode.setImageBitmap(codeGenerator.getQRBitmap(url, getContext()));
             qrCodePurpose.setText(String.format("Attendance code for Class Session: %s", currentClassroomSession.getSessionTime().toString() ));

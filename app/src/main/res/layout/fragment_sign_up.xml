@@ -54,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="Submit"
+        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/register_go_back"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -111,6 +112,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Go Back"
+        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintBaseline_toBaselineOf="@+id/register_submit_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/register_submit_button" />

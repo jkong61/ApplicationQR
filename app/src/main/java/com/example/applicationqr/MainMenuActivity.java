@@ -72,7 +72,7 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
         // User validity
         if(mAuth.getCurrentUser() == null)
         {
-            // Start auth activity activity if user is already logged in
+            // Start login activity activity if user is not logged in
             Intent intent = new Intent();
             intent.setClass(this,AuthActivity.class);
             startActivity(intent);
@@ -109,14 +109,10 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                         getSupportFragmentManager().beginTransaction().add(R.id.main_menu_view, mainMenuFragment,"menu_tag").setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     }
                     else
-                    {
                         Log.d(TAG, "No such document");
-                    }
                 }
                 else
-                {
                     Log.d(TAG, "get failed with ", task.getException());
-                }
             }
         });
     }
@@ -186,13 +182,6 @@ public class MainMenuActivity extends AppCompatActivity implements onFragmentInt
                 // Teacher Menus
                 case (R.id.button_register_student):
                 {
-//                    Log.d(TAG, "register button");
-//                    Intent barcodeScannerIntent = new Intent(this, BarcodeScannerActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putParcelable("USER", currentUser);
-//                    barcodeScannerIntent.putExtras(bundle);
-//                    startActivityForResult(barcodeScannerIntent, BARCODE_REGISTER_REQUEST);
-
                     ClassListFragment classListFragment = ClassListFragment.newInstance(null, id);
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_menu_view, classListFragment).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
                     break;

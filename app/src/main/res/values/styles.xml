@@ -15,8 +15,10 @@
         <item name="android:textSize">28sp</item>
     </style>
 
-    <style name="MenuButtons">
+    <style name="MenuButtons" parent="Widget.AppCompat.Button.Colored">
         <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:padding">24dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>

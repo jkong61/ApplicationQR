@@ -18,11 +18,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Toast;
 
 import com.example.applicationqr.model.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
@@ -58,6 +60,19 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
     private void InitUI()
     {
         textureView = findViewById(R.id.texture_view);
+        FloatingActionButton cancelButton = findViewById(R.id.scanner_cancel);
+
+        // Cancel Scanning Activity
+        cancelButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent resultIntent = new Intent(getApplicationContext(), MainMenuActivity.class);
+                setResult(RESULT_CANCELED, resultIntent);
+                finish();
+            }
+        });
     }
 
     private void startCamera()
@@ -65,6 +80,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
         PreviewConfig previewConfig = new PreviewConfig.Builder().setLensFacing(CameraX.LensFacing.BACK).build();
         Preview preview = new Preview(previewConfig);
 
+        // setup CameraX preview
         preview.setOnPreviewOutputUpdateListener(output ->
         {
             ViewGroup parent = (ViewGroup) textureView.getParent();
@@ -75,16 +91,19 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
             updateTransform();
         });
 
+        // Setup image analysis
         ImageAnalysisConfig imageAnalysisConfig = new ImageAnalysisConfig.Builder().build();
         ImageAnalysis imageAnalysis = new ImageAnalysis(imageAnalysisConfig);
 
         imageAnalysis.setAnalyzer(this);
 
+        // Setup Firebase Vision detector for camera
         FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
                 .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build();
 
         detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
 
+        // Bind everything to the lifecycle
         CameraX.bindToLifecycle(this, preview, imageAnalysis);
     }
 
@@ -196,20 +215,15 @@ public class BarcodeScannerActivity extends AppCompatActivity implements ImageAn
 
     private void returnReply(FirebaseVisionBarcode barcode)
     {
+        Intent resultIntent = new Intent(this, MainMenuActivity.class);
+
         if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_URL && currentUser.getType() == 2)
-        {
-            Intent resultIntent = new Intent(this, MainMenuActivity.class);
             resultIntent.putExtra("URL_VALUE", barcode.getDisplayValue());
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        }
 
         if(barcode.getValueType() == FirebaseVisionBarcode.TYPE_TEXT && currentUser.getType() == 1)
-        {
-            Intent resultIntent = new Intent(this, MainMenuActivity.class);
             resultIntent.putExtra("STUDENT_ID", String.format("%s#%s", classID, barcode.getDisplayValue()));
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        }
+
+        setResult(RESULT_OK, resultIntent);
+        finish();
     }
 }

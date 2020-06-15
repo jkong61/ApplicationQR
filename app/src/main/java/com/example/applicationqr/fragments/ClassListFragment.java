@@ -101,10 +101,7 @@ public class ClassListFragment extends Fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_class_list, container, false);
         InitUI(v);
-        if(classrooms.isEmpty())
-            getClassrooms();
-        else
-            getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+        getClassrooms();
         return v;
     }
 
@@ -171,29 +168,33 @@ public class ClassListFragment extends Fragment
             {
                 if (task.isSuccessful())
                 {
-                    classrooms.clear();
-                    for (QueryDocumentSnapshot document : task.getResult())
+                    if(classrooms.size() != task.getResult().size())
                     {
-                        Map<String,Object> fields = document.getData();
-                        ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
-                        tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
-                        Log.d(TAG, document.getId() + " => " + document.getData());
-                    }
-                    // Turn off loading screen
-                    getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
+                        classrooms.clear();
+                        for (QueryDocumentSnapshot document : task.getResult())
+                        {
+                            Map<String,Object> fields = document.getData();
+                            ArrayList<DocumentReference> documentReferences = (ArrayList<DocumentReference>) fields.get("enrolled");
+                            tempcollection.add(new Classroom(document.getId(), fields.get("coursename").toString(), fields.get("coursecode").toString(), documentReferences.size()));
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                        }
+                        // Turn off loading screen
 
-                    if(task.getResult().isEmpty())
-                        nothingHere.setVisibility(View.VISIBLE);
-                    else
-                    {
-                        Collections.sort(tempcollection, Classroom.nameComparator);
-                        classrooms.addAll(tempcollection);
-                        classAdapter.notifyItemRangeChanged(0, task.getResult().size());
+                        if(task.getResult().isEmpty())
+                            nothingHere.setVisibility(View.VISIBLE);
+                        else
+                        {
+                            Collections.sort(tempcollection, Classroom.nameComparator);
+                            classrooms.addAll(tempcollection);
+                            classAdapter.notifyItemRangeChanged(0, task.getResult().size());
+                        }
                     }
+                    getActivity().findViewById(R.id.loading_panel).setVisibility(View.INVISIBLE);
                 }
                 else
                     Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
     }
+
 }

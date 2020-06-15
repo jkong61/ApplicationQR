@@ -40,7 +40,7 @@ public class LoginFragment extends Fragment
     private Button login_button;
     private EditText login_email, login_password;
     private FirebaseAuth mAuth;
-    private ConstraintLayout loading_panel;
+    private ConstraintLayout loading_panel, login_form;
 
     private onFragmentInteractionListener fragmentInteractionListener;
 
@@ -105,6 +105,7 @@ public class LoginFragment extends Fragment
         login_button = v.findViewById(R.id.login_button);
         loading_panel = getActivity().findViewById(R.id.loading_panel);
         loading_panel.setVisibility(View.INVISIBLE);
+        login_form = v.findViewById(R.id.login_form_layout);
 
         login_button.setOnClickListener(new View.OnClickListener()
         {
@@ -122,6 +123,7 @@ public class LoginFragment extends Fragment
                     Toast.makeText(getContext(), "Logging in..", Toast.LENGTH_SHORT).show();
                     login_button.setEnabled(false);
                     loading_panel.setVisibility(View.VISIBLE);
+                    login_form.setVisibility(View.INVISIBLE);
                     SignInUser(email,password);
                 }
             }
@@ -163,6 +165,7 @@ public class LoginFragment extends Fragment
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
                     login_button.setEnabled(true);
                     loading_panel.setVisibility(View.INVISIBLE);
+                    login_form.setVisibility(View.VISIBLE);
                     Toast.makeText(getContext(), String.format("Authentication failed. %s", task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                 }
             }

@@ -7,6 +7,60 @@
     android:layout_height="match_parent"
     tools:context=".fragments.LoginFragment">
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/login_form_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_header">
+
+        <TextView
+            android:id="@+id/login_email_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Email"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.40" />
+
+        <TextView
+            android:id="@+id/login_password_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Password"
+            app:layout_constraintStart_toStartOf="@id/login_email_label"
+            app:layout_constraintTop_toBottomOf="@+id/login_email_label" />
+
+        <EditText
+            android:id="@+id/login_email_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            app:layout_constraintBaseline_toBaselineOf="@+id/login_email_label"
+            app:layout_constraintStart_toStartOf="@id/login_password_input"/>
+
+        <EditText
+            android:id="@+id/login_password_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            app:layout_constraintBaseline_toBaselineOf="@+id/login_password_label"
+            app:layout_constraintStart_toEndOf="@+id/login_password_label" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
         android:id="@+id/login_header"
         style="@style/HeaderTitle"
@@ -15,48 +69,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
-
-    <TextView
-        android:id="@+id/login_email_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        app:layout_constraintVertical_bias="0.40"
-        android:text="Email"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/login_password_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Password"
-        app:layout_constraintStart_toStartOf="@id/login_email_label"
-        app:layout_constraintTop_toBottomOf="@+id/login_email_label" />
-
-    <EditText
-        android:id="@+id/login_email_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:imeOptions="actionNext"
-        android:inputType="textEmailAddress"
-        app:layout_constraintBaseline_toBaselineOf="@+id/login_email_label"
-        app:layout_constraintStart_toStartOf="@id/login_password_input"/>
-
-    <EditText
-        android:id="@+id/login_password_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:ems="10"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        app:layout_constraintBaseline_toBaselineOf="@+id/login_password_label"
-        app:layout_constraintStart_toEndOf="@+id/login_password_label" />
-
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"

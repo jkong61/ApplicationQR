@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -40,7 +41,7 @@ public class UpdateProfileFragment extends Fragment
     private Button updateButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private RelativeLayout loadingPanel;
+    private ConstraintLayout loadingPanel, update_layout;
 
     private onFragmentInteractionListener fragmentInteractionListener;
 
@@ -107,6 +108,7 @@ public class UpdateProfileFragment extends Fragment
         studentID = v.findViewById(R.id.student_update_id_input);
         studentID.setText(mParam1.getUserID());
 
+        update_layout = v.findViewById(R.id.update_form_layout);
         updateButton = v.findViewById(R.id.student_update_button);
         updateButton.setOnClickListener(new View.OnClickListener()
         {
@@ -117,6 +119,7 @@ public class UpdateProfileFragment extends Fragment
                 final String id = studentID.getText().toString();
                 Log.d(TAG,String.format("Update button clicked. Student Name: %s, ID: %s",name,id));
                 loadingPanel.setVisibility(View.VISIBLE);
+                update_layout.setVisibility(View.INVISIBLE);
 
                 Map<String, Object> data = new HashMap<String, Object>();
                 data.put("name", name);
@@ -144,6 +147,7 @@ public class UpdateProfileFragment extends Fragment
                         Log.w(TAG, "Error updating document", e);
                         Toast.makeText(getContext(),String.format("Failed to Update Document: %s", e.getMessage()),Toast.LENGTH_SHORT).show();
                         loadingPanel.setVisibility(View.INVISIBLE);
+                        update_layout.setVisibility(View.VISIBLE);
                     }
                 });
             }

@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".fragments.UpdateProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/student_update_header"
         style="@style/HeaderTitle"
@@ -16,46 +15,59 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/student_update_name_label"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/update_form_layout"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        app:layout_constraintVertical_bias="0.40"
-        android:text="Name"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/student_update_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/student_update_header">
 
-    <EditText
-        android:id="@+id/student_update_name_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:imeOptions="actionNext"
-        android:inputType="textEmailAddress"
-        app:layout_constraintBaseline_toBaselineOf="@+id/student_update_name_label"
-        app:layout_constraintStart_toStartOf="@id/student_update_id_input"/>
 
-    <TextView
-        android:id="@+id/student_update_id_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Student ID"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="@+id/student_update_name_label"
-        app:layout_constraintTop_toBottomOf="@+id/student_update_name_label" />
+        <TextView
+            android:id="@+id/student_update_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.40" />
 
-    <EditText
-        android:id="@+id/student_update_id_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_marginStart="8dp"
-        android:imeOptions="actionDone"
-        android:inputType="number"
-        app:layout_constraintBaseline_toBaselineOf="@+id/student_update_id_label"
-        app:layout_constraintStart_toEndOf="@id/student_update_id_label"/>
+        <EditText
+            android:id="@+id/student_update_name_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            app:layout_constraintBaseline_toBaselineOf="@+id/student_update_name_label"
+            app:layout_constraintStart_toStartOf="@id/student_update_id_input"/>
+
+        <TextView
+            android:id="@+id/student_update_id_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Student ID"
+            app:layout_constraintStart_toStartOf="@+id/student_update_name_label"
+            app:layout_constraintTop_toBottomOf="@+id/student_update_name_label" />
+
+        <EditText
+            android:id="@+id/student_update_id_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            app:layout_constraintBaseline_toBaselineOf="@+id/student_update_id_label"
+            app:layout_constraintStart_toEndOf="@id/student_update_id_label"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/student_update_button"
